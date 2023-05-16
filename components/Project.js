@@ -19,7 +19,7 @@ function Project({project}){
     }, []);
     const [tasks, setTasks] = useState([]);
     const getTasksByProject = async (projectId) =>
-        await fetch(`${urlBase}projets/${projectId}/tasks`).then(
+        await fetch(`${urlBase}/projets/${projectId}/tasks`).then(
             async (response) => {
                 if (response.ok) {
                     const data = await response.json();
@@ -32,7 +32,8 @@ function Project({project}){
     return (
         <Pressable>
             <View style={styles.info}>
-                <View>
+
+                <View style={{ flex: 1 }}>
                     <Text style={[styles.textBase, styles.description]}> {project.nom}</Text>
                     <Text style={styles.textBase}> {project.membres.length + " membres"} </Text>
                 </View>
@@ -66,7 +67,9 @@ const styles=StyleSheet.create({
     description:{
             fontSize:16,
             marginBottom: 4,
-            fontWeight: 'bold'
+            fontWeight: 'bold',
+            color:GlobalStyles.colors.primary50,
+
         },
 
     progressContainer:{

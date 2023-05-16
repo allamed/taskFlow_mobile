@@ -7,7 +7,7 @@ import {useDispatch} from "react-redux";
 export const TabButton =({currentTab, setCurrentTab, text, icon} )=>{
     const dispatch = useDispatch();
     return (
-
+<>
         <TouchableOpacity onPress={() => {
             if (text == "LogOut") {
                 // Do your Stuff...
@@ -45,5 +45,6 @@ export const TabButton =({currentTab, setCurrentTab, text, icon} )=>{
 
             </View>
         </TouchableOpacity>
+</>
     );
 }

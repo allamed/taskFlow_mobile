@@ -3,9 +3,9 @@ import React, { useRef, useState } from 'react';
 import { Animated, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import profile from './assets/profile.png';
 // Tab ICons...
-import { Provider } from "react-redux";
+import {Provider, useDispatch} from "react-redux";
 import { store } from "./store";
-// Menu
+// Menus
 import menu from './assets/menu.png';
 import close from './assets/close.png';
 
@@ -17,16 +17,9 @@ import CurrentScreen from "./screens/CurrentScreen";
 import {logOutTab, tabs} from "./utils/tabs";
 import {Overlay} from "@rneui/base";
 import Sidebar from "./screens/Sidebar";
-export default function  AppWrapper () {
+import {getAllProjects} from "./features/project/projectSlice";
 
-
-    return (
-        <Provider store={store}>
-            <App />
-        </Provider>
-    )
-}
- function App() {
+export default function App() {
   const [currentTab, setCurrentTab] = useState("Accueil");
   // To get the curretn Status of menu ...
   const [showMenu, setShowMenu] = useState(false);
@@ -37,102 +30,104 @@ export default function  AppWrapper () {
     const scaleValue = useRef(new Animated.Value(1)).current;
     const closeButtonOffset = useRef(new Animated.Value(0)).current;
 
+return(
+    <Provider store={store}>
+        <SafeAreaView style={styles.container}>
+            <StatusBar
+                animated={true}
+                backgroundColor="#D6A2E8"
+            />
 
+            <View style={{ justifyContent: 'flex-start', padding: 15 }}>
+                <Sidebar currenttab={currentTab} setCurrentTab={setCurrentTab} />
 
-  return (
+            </View>
 
-      <SafeAreaView style={styles.container}>
-        <StatusBar
-            animated={true}
-            backgroundColor="#D6A2E8"
-        />
+            {
+                // Over lay View...
+            }
 
-        <View style={{ justifyContent: 'flex-start', padding: 15 }}>
-          <Sidebar currenttab={currentTab} setCurrentTab={setCurrentTab} />
-
-        </View>
-
-        {
-          // Over lay View...
-        }
-
-       {/*<Overlay showMenu={showMenu} setShowMenu={setShowMenu} offsetValue={offsetValue} scaleValue={scaleValue} closeButtonOffset={closeButtonOffset} />
+            {/*<Overlay showMenu={showMenu} setShowMenu={setShowMenu} offsetValue={offsetValue} scaleValue={scaleValue} closeButtonOffset={closeButtonOffset} />
 */}
-          <Animated.View style={{
-              flexGrow: 1,
-              backgroundColor: 'white',
-              position: 'absolute',
-              top: 0,
-              bottom: 0,
-              left: 0,
-              right: 0,
-              paddingHorizontal: 15,
-              paddingVertical: 20,
-              borderRadius: showMenu ? 15 : 0,
-              // Transforming View...
-              transform: [
-                  { scale: scaleValue },
-                  { translateX: offsetValue }
-              ]
-          }}>
+            <Animated.View style={{
+                flexGrow: 1,
+                backgroundColor: 'white',
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                paddingHorizontal: 15,
+                paddingVertical: 20,
+                borderRadius: showMenu ? 15 : 0,
+                // Transforming View...
+                transform: [
+                    { scale: scaleValue },
+                    { translateX: offsetValue }
+                ]
+            }}>
 
-              {
-                  // Menu Button...
-              }
+                {
+                    // Menu Button...
+                }
 
-              <Animated.View style={{
-                  transform: [{
-                      translateY: closeButtonOffset
-                  }]
-              }}>
-                  <TouchableOpacity onPress={() => {
-                      // Do Actions Here....
-                      // Scaling the view...
-                      Animated.timing(scaleValue, {
-                          toValue: showMenu ? 1 : 0.88,
-                          duration: 300,
-                          useNativeDriver: true
-                      })
-                          .start()
+                <Animated.View style={{
+                    transform: [{
+                        translateY: closeButtonOffset
+                    }]
+                }}>
+                    <TouchableOpacity onPress={() => {
 
-                      Animated.timing(offsetValue, {
-                          // YOur Random Value...
-                          toValue: showMenu ? 0 : 230,
-                          duration: 300,
-                          useNativeDriver: true
-                      })
-                          .start()
+                        // Do Actions Here....
+                        // Scaling the view...
+                        Animated.timing(scaleValue, {
+                            toValue: showMenu ? 1 : 0.88,
+                            duration: 300,
+                            useNativeDriver: true
+                        })
+                            .start()
 
-                      Animated.timing(closeButtonOffset, {
-                          // YOur Random Value...
-                          toValue: !showMenu ? -30 : 0,
-                          duration: 300,
-                          useNativeDriver: true
-                      })
-                          .start()
+                        Animated.timing(offsetValue, {
+                            // YOur Random Value...
+                            toValue: showMenu ? 0 : 230,
+                            duration: 300,
+                            useNativeDriver: true
+                        })
+                            .start()
 
-                      setShowMenu(!showMenu);
-                  }}>
+                        Animated.timing(closeButtonOffset, {
+                            // YOur Random Value...
+                            toValue: !showMenu ? -30 : 0,
+                            duration: 300,
+                            useNativeDriver: true
+                        })
+                            .start()
 
-                      <Image source={showMenu ? close : menu} style={{
-                          width: 20,
-                          height: 20,
-                          tintColor: 'black',
-                          marginTop: 40,
+                        setShowMenu(!showMenu);
+                    }}>
 
-                      }}></Image>
+                        <Image source={showMenu ? close : menu} style={{
+                            width: 20,
+                            height: 20,
+                            tintColor: 'black',
+                            marginTop: 40,
 
-                  </TouchableOpacity>
+                        }}></Image>
 
-                  <CurrentScreen tabTitle={currentTab}/>
+                    </TouchableOpacity>
+
+                    <CurrentScreen tabTitle={currentTab}/>
 
 
-              </Animated.View>
+                </Animated.View>
 
-          </Animated.View>
-      </SafeAreaView>
+            </Animated.View>
+        </SafeAreaView>
 
-  );
+    </Provider >
+);
+
+
 }
 
 // For multiple Buttons...

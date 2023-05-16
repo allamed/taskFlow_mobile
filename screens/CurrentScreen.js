@@ -5,10 +5,15 @@ import Home from "./Home";
 import Projects from "./Projects";
 import Tasks from "./Tasks";
 import Profile from "./Profile";
+import {store} from "../store";
+import {useDispatch} from "react-redux";
+import {getAllProjects} from "../features/project/projectSlice";
+
 
 const CurrentScreen=({tabTitle})=>{
+
     return (
-        <>
+        < >
             <Text style={{
                 fontSize: 30,
                 fontWeight: 'bold',
