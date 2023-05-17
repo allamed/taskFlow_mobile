@@ -15,7 +15,10 @@ function LoginScreen() {
     setIsAuthenticating(true);
     try {
       const user = await login(email, password);
+
+      console.log(" Login screen : user ="+ user);
       authCtx.authenticate(user);
+
     } catch (error) {
       Alert.alert(
         'Authentication failed!',

@@ -75,17 +75,19 @@ function Root() {
   const authCtx = useContext(AuthContext);
 
   useEffect(() => {
-    async function fetchToken() {
-      const storedToken = await AsyncStorage.getItem('token');
+    async function fetchUser() {
+      const email = await AsyncStorage.getItem('email');
+        const password = await AsyncStorage.getItem('password');
 
-      if (storedToken) {
-        authCtx.authenticate(storedToken);
+      if (email && password) {
+          console.log("app js "+ email + " "+ password);
+        authCtx.authenticate({ email, password});
       }
-
+        console.log("app js "+ email + " "+ password);
       setIsTryingLogin(false);
     }
 
-    fetchToken();
+    fetchUser();
   }, []);
 
   if (isTryingLogin) {

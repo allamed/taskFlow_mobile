@@ -26,6 +26,7 @@ export async function login(email, password) {
     });
 
     const user = response.data;
+    console.log(user);
 
     return user;
 }

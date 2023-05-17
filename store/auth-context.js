@@ -12,14 +12,19 @@ export const AuthContext = createContext({
 function AuthContextProvider({ children }) {
   const [authUser, setAuthUser] = useState('');
 
-  function authenticate(user) {
+  async function authenticate(user) {
     setAuthUser(user);
-    AsyncStorage.setItem('user', user);
+
+
+   await AsyncStorage.setItem('email', user.email);
+    await AsyncStorage.setItem('password', user.password);
+
   }
 
-  function logout() {
+  async function logout() {
     setAuthUser(null);
-    AsyncStorage.removeItem('user');
+    await AsyncStorage.removeItem('email');
+    await AsyncStorage.removeItem('password');
   }
 
   const value = {

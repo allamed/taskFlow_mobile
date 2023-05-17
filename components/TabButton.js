@@ -1,11 +1,30 @@
 import {Image, Text, TouchableOpacity, View} from "react-native";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {Icon} from "@rneui/themed";
 import {getAllProjects} from "../features/project/projectSlice";
 import {useDispatch} from "react-redux";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const TabButton =({currentTab, setCurrentTab, text, icon} )=>{
+    useEffect(() => {
+        async function fetchUser() {
+            const email = await AsyncStorage.getItem('email');            // convert to object format
+            setUserEmail(email);
+           // console.log(" tab b ", email);
+
+        }
+
+        fetchUser();
+
+    }, []);
+    const [userEmail, setUserEmail]=useState("");
+
     const dispatch = useDispatch();
+
+
+
+
+
     return (
 <>
         <TouchableOpacity onPress={() => {
@@ -15,7 +34,7 @@ export const TabButton =({currentTab, setCurrentTab, text, icon} )=>{
                 setCurrentTab(text)
             }
             if (text == "Mes projets") {
-                dispatch(getAllProjects());
+                dispatch(getAllProjects(userEmail));
             }
         }}>
             <View style={{

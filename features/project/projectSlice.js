@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import customFetch from "../../utils/axios";
 //import { toast } from "react-toastify";
 
@@ -12,9 +12,11 @@ const initialState = {
 
 export const getAllProjects = createAsyncThunk(
   "allProjects/getProjects",
-  async (_, thunkAPI) => {
+  async (userEmail, thunkAPI) => {
     //const user = getUserFromLocalStorage();
-    let url = `/projets/allam@gmail.com`;
+    console.log("userEmail" + userEmail);
+    let url = `/projets/${userEmail}`;
+
 
     try {
       const resp = await customFetch.get(url);
