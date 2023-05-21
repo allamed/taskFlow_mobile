@@ -32,6 +32,7 @@ export const TabButton =({currentTab, setCurrentTab, text, icon} )=>{
                 // Do your Stuff...
             } else {
                 setCurrentTab(text)
+                navigation.navigate('Profile', {name: 'Jane'})
             }
             if (text == "Mes projets") {
                 dispatch(getAllProjects(userEmail));

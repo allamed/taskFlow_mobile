@@ -1,16 +1,39 @@
 import {Image, Text} from "react-native";
-import random from "../assets/1122563.jpg";
 import React from "react";
+import {NavigationContainer} from "@react-navigation/native";
+import {createNativeStackNavigator} from "@react-navigation/native-stack";
+import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
+
+
 import Home from "./Home";
 import Projects from "./Projects";
 import Tasks from "./Tasks";
 import Profile from "./Profile";
-import {store} from "../store";
-import {useDispatch} from "react-redux";
-import {getAllProjects} from "../features/project/projectSlice";
+import ProjectDetails from "./ProjectDetails";
+
+const Stack = createNativeStackNavigator();
+const BottomTabs = createBottomTabNavigator();
+
+const Navigation = () => {
 
 
+    return (
+        <>
+
+       {/* <NavigationContainer>
+            <Stack.Navigator>
+
+                <Stack.Screen name="Projects" component={Projects} />
+                <Stack.Screen name="ProjectDetails" component={ProjectDetails} />
+
+            </Stack.Navigator>
+        </NavigationContainer>*/}
+        </>
+    );
+}
 const CurrentScreen=({tabTitle})=>{
+
+
 
     return (
         < >
@@ -25,7 +48,9 @@ const CurrentScreen=({tabTitle})=>{
 
             }
             {
-                ( tabTitle=="Mes projets")&& <Projects/>
+                ( tabTitle=="Mes projets")&& (  <Navigation/>)
+
+
 
             }
             {
@@ -37,22 +62,7 @@ const CurrentScreen=({tabTitle})=>{
 
             }
 
-           {/* <Image source={random} style={{
-                width: '100%',
-                height: 300,
-                borderRadius: 15,
-                marginTop: 25
-            }}></Image>
 
-            <Text style={{
-                fontSize: 20,
-                fontWeight: 'bold'
-                , paddingTop: 15,
-                paddingBottom: 5
-            }}>Lorum epsum</Text>
-
-            <Text style={{
-            }}>Lorem ipsum dolor sit amet.</Text>*/}
         </>
     );
 }

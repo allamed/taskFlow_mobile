@@ -1,4 +1,5 @@
-import { useContext, useEffect, useState } from 'react';
+import 'react-native-gesture-handler';
+import React, { useContext, useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
@@ -11,9 +12,21 @@ import WelcomeScreen from './screens/WelcomeScreen';
 import { Colors } from './constants/styles';
 import AuthContextProvider, { AuthContext } from './store/auth-context';
 import IconButton from './components/ui/IconButton';
-import Main from "./main";
+
+import Home from "./screens/Home";
+import Projects from "./screens/Projects";
+import Profile from "./screens/Profile";
+import Sidebar from "./screens/Sidebar";
+import {createDrawerNavigator, DrawerContentScrollView, DrawerItem, DrawerItemList} from "@react-navigation/drawer";
+import Tasks from "./screens/Tasks";
+import {getAllProjects} from "./features/project/projectSlice";
+import {store} from "./store";
+import {Provider} from "react-redux";
+import {Icon} from "@rneui/themed";
 
 const Stack = createNativeStackNavigator();
+
+const Drawer = createDrawerNavigator();
 
 function AuthStack() {
   return (
@@ -29,11 +42,23 @@ function AuthStack() {
     </Stack.Navigator>
   );
 }
+const CustomDrawerContent = (props) => {
+    return(
+    <DrawerContentScrollView {...props}>
+        <DrawerItemList {...props} />
+        <DrawerItem
+            label="Logout"
+            onPress={() => {}}
+            icon={() => <Icon name="exit" color="#000" size={24} />}
+        />
+    </DrawerContentScrollView>
+    );
+}
 
 function AuthenticatedStack() {
   const authCtx = useContext(AuthContext);
   return (
-    <Stack.Navigator
+    /*<Stack.Navigator
       screenOptions={{
         headerStyle: { backgroundColor: Colors.primary500 },
         headerTintColor: 'white',
@@ -41,7 +66,7 @@ function AuthenticatedStack() {
       }}
     >
       <Stack.Screen
-        name="Main"
+        name="Home"
         component={Main}
         options={{
           headerRight: ({ tintColor }) => (
@@ -54,7 +79,19 @@ function AuthenticatedStack() {
           ),
         }}
       />
-    </Stack.Navigator>
+
+    </Stack.Navigator>*/
+      <Provider store={store}>
+      <Drawer.Navigator drawerContent={(props) => <CustomDrawerContent {...props} />}>
+
+          <Drawer.Screen name="Home" component={Home} />
+          <Drawer.Screen name="Projects" component={Projects}/>
+          <Drawer.Screen name="Profile" component={Profile} />
+          <Drawer.Screen name="Tasks" component={Tasks} />
+
+
+      </Drawer.Navigator>
+          </Provider >
   );
 }
 

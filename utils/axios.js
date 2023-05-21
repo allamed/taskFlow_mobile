@@ -1,8 +1,8 @@
 import axios from "axios";
 //import { clearStore } from "../features/user/userSlice";
 
-
-export const urlBase ="http://192.168.1.126:8080";
+const ip="192.168.180.57"
+export const urlBase ="http://" + ip +":8080";
   //"http://ec2-15-188-207-170.eu-west-3.compute.amazonaws.com:8080";
   //"/api";
 

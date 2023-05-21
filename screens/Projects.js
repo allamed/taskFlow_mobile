@@ -2,10 +2,34 @@ import {Text} from "react-native";
 
 
 import Project from "../components/Project";
-import {Provider, useSelector} from "react-redux";
+import {Provider, useDispatch, useSelector} from "react-redux";
 import {store} from "../store";
+import {useEffect, useState} from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {getAllProjects} from "../features/project/projectSlice";
 
 const Projects=()=>{
+    useEffect(() => {
+        async function fetchUser() {
+            const email = await AsyncStorage.getItem('email');            // convert to object format
+            setUserEmail(email);
+            // console.log(" tab b ", email);
+
+        }
+
+        fetchUser();
+
+
+    }, []);
+    const [userEmail, setUserEmail]=useState("");
+
+    const dispatch = useDispatch();
+    dispatch(getAllProjects(userEmail));
+    return (<AllProjects/>);
+
+}
+const AllProjects=()=>{
+
     const { projects } = useSelector(
         (store) => store.allProjects
     );
