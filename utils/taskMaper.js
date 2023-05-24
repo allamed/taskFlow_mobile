@@ -24,6 +24,7 @@ export const mapData = (tasks, chef) => {
         commentaires,
         etat,
         responsable,
+          deadLine,
       };
     }
   );

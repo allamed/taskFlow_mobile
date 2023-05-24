@@ -8,9 +8,12 @@ import {getAllTasks} from "../features/tasks/allTasksSlice";
 import { BoardRepository } from 'react-native-draganddrop-board'
 import { Board } from 'react-native-draganddrop-board'
 import {mapData} from "../utils/taskMaper";
+import {createNativeStackNavigator} from "@react-navigation/native-stack";
+import CurrentTask from "./CurrentTask";
 
 
 const Tasks=()=>{
+    const [currentTask, setCurrentTask] = useState('initial value');
     useEffect(() => {
         async function fetchUser() {
             const email = await AsyncStorage.getItem('email');            // convert to object format
@@ -23,14 +26,24 @@ const Tasks=()=>{
 
 
     }, []);
-    const [userEmail, setUserEmail]=useState("");
+    const [userEmail, setUserEmail]=useState({});
 
     const dispatch = useDispatch();
     dispatch(getAllTasks(userEmail));
-    return (<AllTasks/>);
+    const Stack = createNativeStackNavigator();
+
+    return (
+        <Stack.Navigator>
+            <Stack.Screen name="AllTasks" >
+                {props => <AllTasks {...props} setCurrentTask={setCurrentTask} />}
+            </Stack.Screen>
+            <Stack.Screen name="Task details">
+                {props => <CurrentTask {...props} currentTask={currentTask} />}
+            </Stack.Screen>
+        </Stack.Navigator>   );
 
 }
-const AllTasks=()=>{
+const AllTasks=({navigation, setCurrentTask})=>{
 
 
 
@@ -47,7 +60,10 @@ const AllTasks=()=>{
 
             <Board
                 boardRepository={boardRepository}
-                open={() => {}}
+                open={(item) => {
+                    console.log('open', item);
+                    setCurrentTask(item);
+                    navigation.navigate('Task details')}}
                 onDragEnd={() => {console.log('drag end')}}
             />
 

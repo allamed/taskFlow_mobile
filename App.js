@@ -32,9 +32,9 @@ function AuthStack() {
   return (
     <Stack.Navigator
       screenOptions={{
-        headerStyle: { backgroundColor: Colors.primary500 },
+        headerStyle: { backgroundColor: "#0097e6" },
         headerTintColor: 'white',
-        contentStyle: { backgroundColor: Colors.primary100 },
+        contentStyle: { backgroundColor: "#f5f6fa" },
       }}
     >
       <Stack.Screen name="Login" component={LoginScreen} />
@@ -42,21 +42,22 @@ function AuthStack() {
     </Stack.Navigator>
   );
 }
-const CustomDrawerContent = (props) => {
-    return(
-    <DrawerContentScrollView {...props}>
-        <DrawerItemList {...props} />
-        <DrawerItem
-            label="Logout"
-            onPress={() => {}}
-            icon={() => <Icon name="exit" color="#000" size={24} />}
-        />
-    </DrawerContentScrollView>
-    );
-}
+
 
 function AuthenticatedStack() {
   const authCtx = useContext(AuthContext);
+    const CustomDrawerContent = (props) => {
+        return(
+            <DrawerContentScrollView {...props}>
+                <DrawerItemList {...props} />
+                <DrawerItem
+                    label="Logout"
+                    onPress={() => {authCtx.logout()}}
+                    icon={() => <Icon name="logout" color="#000" size={24} />}
+                />
+            </DrawerContentScrollView>
+        );
+    }
   return (
     /*<Stack.Navigator
       screenOptions={{
@@ -82,7 +83,20 @@ function AuthenticatedStack() {
 
     </Stack.Navigator>*/
       <Provider store={store}>
-      <Drawer.Navigator drawerContent={(props) => <CustomDrawerContent {...props} />}>
+      <Drawer.Navigator drawerContent={(props) => <CustomDrawerContent {...props}
+      options={{
+            headerRight: ({ tintColor }) => (
+                <IconButton
+                    icon="exit"
+                    color={tintColor}
+                    size={24}
+                    onPress={authCtx.logout}
+                />
+            ),
+      }
+        }
+
+      />}>
 
           <Drawer.Screen name="Home" component={Home} />
           <Drawer.Screen name="Projects" component={Projects}/>
@@ -100,8 +114,9 @@ function Navigation() {
 
   return (
     <NavigationContainer>
-      {!authCtx.isAuthenticated && <AuthStack />}
-      {authCtx.isAuthenticated && <AuthenticatedStack />}
+{/*      {!authCtx.isAuthenticated && <AuthStack />}
+      {authCtx.isAuthenticated && <AuthenticatedStack />}*/}
+<AuthenticatedStack />
     </NavigationContainer>
   );
 }
