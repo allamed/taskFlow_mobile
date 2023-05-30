@@ -26,7 +26,7 @@ export async function login(email, password) {
     });
 
     const user = response.data;
-    console.log(user);
+    console.log("user id:  " + user.id);
 
     return user;
 }

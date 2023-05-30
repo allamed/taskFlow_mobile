@@ -61,10 +61,10 @@ const AllTasks=({navigation, setCurrentTask})=>{
             <Board
                 boardRepository={boardRepository}
                 open={(item) => {
-                    console.log('open', item);
+                   // console.log('open', item);
                     setCurrentTask(item);
                     navigation.navigate('Task details')}}
-                onDragEnd={() => {console.log('drag end')}}
+                onDragEnd={(src, dest, draggedItem) => {console.log('src :'+src+' dest :'+dest+' draggedItem :'+draggedItem)}}
             />
 
         </>

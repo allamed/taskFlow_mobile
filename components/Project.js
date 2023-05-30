@@ -18,6 +18,7 @@ function Project({project}){
 
     }, []);
     const [tasks, setTasks] = useState([]);
+    const colors = GlobalStyles.colors;
     const getTasksByProject = async (projectId) =>
         await fetch(`${urlBase}/projets/${projectId}/tasks`).then(
             async (response) => {
@@ -50,7 +51,7 @@ const styles=StyleSheet.create({
     info:{
         padding:12,
         marginVertical:8,
-        backgroundColor: GlobalStyles.colors.primary500,
+        backgroundColor: GlobalStyles.colors.primary400,
         flexDirection:"row",
         justifyContent:"space-between",
         borderRadius:6,
@@ -59,6 +60,9 @@ const styles=StyleSheet.create({
         shadowRadius:4,
         shadowOffset:{width:1, height:1},
         shadowOpacity:0.4
+        // make space between elements
+
+
 
     },
     textBase:{
@@ -69,6 +73,7 @@ const styles=StyleSheet.create({
             marginBottom: 4,
             fontWeight: 'bold',
             color:GlobalStyles.colors.primary50,
+        marginHorizontal:4,
 
         },
 

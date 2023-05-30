@@ -97,7 +97,7 @@ const allProjectsSlice = createSlice({
         state.isLoading = false;
         state.projects = payload.projets;
        // state.totalProjects = payload.projets.length;
-        console.log(payload);
+        console.log("payload: ", state.projects);
       })
       .addCase(getAllProjects.rejected, (state, { payload }) => {
         state.isLoading = false;
@@ -131,6 +131,7 @@ const allProjectsSlice = createSlice({
       })
       .addCase(createProject.rejected, (state, { payload }) => {
         state.isLoading = false;
+        console.log("projet non créé");
         //toast.error(payload);
       });
     /*.addCase(getTasksByProject.pending, (state) => {})

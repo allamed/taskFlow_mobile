@@ -35,6 +35,18 @@ export const updateTaskState = createAsyncThunk(
   }
 );
 
+export const updateTaskProgress = createAsyncThunk(
+    "allTasks/updateTaskProgress",
+    async (info, thunkAPI) => {
+      try {
+        const resp = await customFetch.post("/taches/modifierAvancement", info);
+        return resp.data;
+      } catch (error) {
+        return thunkAPI.rejectWithValue(error.response.data);
+      }
+    }
+);
+
 const allTasksSlice = createSlice({
   name: 'allTasks',
   initialState,
@@ -84,14 +96,33 @@ const allTasksSlice = createSlice({
             return { ...task, etat: payload.tache.etat };
           return task;
         });
-        state.mapedTasks = mapData(state.tasks);
+
 
         //console.log(payload.tache);
       })
       .addCase(updateTaskState.rejected, (state, { payload }) => {
         state.isLoading = false;
 
-      });
+      }) .addCase(updateTaskProgress.pending, (state) => {
+      //state.isLoading = true;
+    })
+        .addCase(updateTaskProgress.fulfilled, (state, { payload }) => {
+          state.isLoading = false;
+          const editedTask = payload.tache;
+            state.tasks = state.tasks.map((task) => {
+            if (task.id == editedTask.id)
+              return { ...task, avancement: editedTask.avancement };
+            return task;
+            });
+
+
+
+
+          //console.log("currentTask : " + state.currentTask);
+
+        })
+        .addCase(updateTaskProgress.rejected, (state, { payload }) => {
+        });
   },
 });
 export default allTasksSlice.reducer;

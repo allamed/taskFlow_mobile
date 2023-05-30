@@ -114,9 +114,9 @@ function Navigation() {
 
   return (
     <NavigationContainer>
-{/*      {!authCtx.isAuthenticated && <AuthStack />}
-      {authCtx.isAuthenticated && <AuthenticatedStack />}*/}
-<AuthenticatedStack />
+     {!authCtx.isAuthenticated && <AuthStack />}
+      {authCtx.isAuthenticated && <AuthenticatedStack />}
+
     </NavigationContainer>
   );
 }
@@ -129,13 +129,13 @@ function Root() {
   useEffect(() => {
     async function fetchUser() {
       const email = await AsyncStorage.getItem('email');
-        const password = await AsyncStorage.getItem('password');
+        const id = await AsyncStorage.getItem('userId');
 
-      if (email && password) {
-          console.log("app js "+ email + " "+ password);
-        authCtx.authenticate({ email, password});
+      if (email && id) {
+          console.log("app js "+ email + " "+ id);
+        authCtx.authenticate({ email, id});
       }
-        console.log("app js "+ email + " "+ password);
+        console.log("app js "+ email + " "+ id);
       setIsTryingLogin(false);
     }
 
