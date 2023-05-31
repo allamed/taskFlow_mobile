@@ -11,14 +11,13 @@ function timePassed(dateString) {
     const differenceInDaysRounded = Math.floor(differenceInDays);
     return differenceInDaysRounded;
 }
-function Project({project}){
+function Project({navigation, project, setCurrentProject}){
     useEffect(() => {
 
         getTasksByProject(project.id);
 
     }, []);
     const [tasks, setTasks] = useState([]);
-    const colors = GlobalStyles.colors;
     const getTasksByProject = async (projectId) =>
         await fetch(`${urlBase}/projets/${projectId}/tasks`).then(
             async (response) => {
@@ -31,7 +30,10 @@ function Project({project}){
         );
 
     return (
-        <Pressable>
+        <Pressable onPress={()=>{
+            setCurrentProject(project);
+            navigation.navigate("Project details");
+        }}>
             <View style={styles.info}>
 
                 <View style={{ flex: 1 }}>
@@ -78,6 +80,7 @@ const styles=StyleSheet.create({
         },
 
     progressContainer:{
+        margin:4,
             paddingHorizontal:12,
         paddingVertical:4,
         backgroundColor:"white",

@@ -7,6 +7,9 @@ import {store} from "../store";
 import React, {useEffect, useState} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {createProject, getAllProjects} from "../features/project/projectSlice";
+import CurrentTask from "./CurrentTask";
+import ProjectDetails from "./ProjectDetails";
+import {createStackNavigator} from "@react-navigation/stack";
 
 const Projects=()=>{
     useEffect(() => {
@@ -29,13 +32,24 @@ const Projects=()=>{
 
     const [userEmail, setUserEmail]=useState("");
     const [userId, setUserId]=useState("");
-
+    const [currentProject, setCurrentProject]=useState(null);
+    const Stack= createStackNavigator();
     const dispatch = useDispatch();
     dispatch(getAllProjects(userEmail));
-    return (<AllProjects userId={userId} userEmail={userEmail}/>);
+    return (
+        <Stack.Navigator>
+            <Stack.Screen name="AllTasks" options={{headerShown: false}} >
+                {props => <AllProjects {...props} userId={userId} userEmail={userEmail} setCurrentProject={setCurrentProject}/>}
+            </Stack.Screen>
+            <Stack.Screen name="Project details">
+                {props => <ProjectDetails {...props} currentProject={currentProject} />}
+            </Stack.Screen>
+        </Stack.Navigator>
+
+    );
 
 }
-const AllProjects=({userId, userEmail})=>{
+const AllProjects=({userId, userEmail, setCurrentProject, navigation})=>{
     const dispatch=useDispatch();
     const [modalVisible, setModalVisible] = useState(false);
     const [projectName, setProjectName] = useState("");
@@ -69,7 +83,7 @@ const AllProjects=({userId, userEmail})=>{
                 />*/}
            { projects.map((project)=>{
             return (
-                <Project key={project.id} project={project} />
+                <Project key={project.id} project={project} setCurrentProject={setCurrentProject} navigation={navigation} />
 
            );
         })}
