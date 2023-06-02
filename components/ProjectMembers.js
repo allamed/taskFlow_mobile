@@ -4,11 +4,14 @@ import userIcon from "../assets/usericon.png"
 import {Icon} from "@rneui/themed";
 import React, {useState} from "react";
 import {useDispatch} from "react-redux";
-import {addMemberToProject} from "../features/currentProject/currentProjectSlice";
+import {addMemberToProject, removeMemberFromProject} from "../features/currentProject/currentProjectSlice";
+import UserAvatar from "./ui/UserAvatar";
 
 const ProjectMembers = ({members, projectId}) => {
     const [addMemberModalVisible, setAddMemberModalVisible]=useState(false);
     const [newMemberEmail, setNewMemberEmail]=useState("")
+    const [deleteIconVisible, setDeleteIconVisible]=useState(false);
+    const [memberToDelete, setMemberToDelete]=useState(null);
     const dispatch = useDispatch();
 
     const addMember=()=>{
@@ -27,35 +30,76 @@ const ProjectMembers = ({members, projectId}) => {
 
 
     }
+    const deleteMember=()=>{
+        // dispatch delete member action
+        Alert.alert(
+            "Delete member",
+            "Are you sure you want to delete " + memberToDelete.nom + " from this project ?",
+            [
+                {
+                    text: "Cancel",
+                    onPress: () => {
+                        setDeleteIconVisible(false);
+                        setMemberToDelete(null);
+                    },
+                    style: "cancel"
+                },
+                { text: "OK", onPress: () => {
+                        // dispatch delete member action
+                        dispatch(removeMemberFromProject({
+                            id: projectId,
+                            email: memberToDelete.email
+                        }));
+
+                        console.log("delete member");
+                    } }
+            ]
+        );
+
+        setDeleteIconVisible(false);
+        setMemberToDelete(null);
+    }
     
 
 
 
     return(
-        <View style={{marginVertical:10}}>
-            <Text style={{marginVertical:10, fontSize:20, alignSelf:"center"}}>Members </Text>
+        <ScrollView style={{margin:25}} contentContainerStyle={{alignContent:"center", flex:1}}>
+
             {members.map((member)=>{
                 return (
-                    <View style={{}}>
+                    <Pressable style={{}} key={member.id} onLongPress={
+                        ()=>{
+                            setDeleteIconVisible(true);
+                            setMemberToDelete(member);
+                        }
+                    }
+                    delayLongPress={1000}
+                    >
                         <View style={{flexDirection:"row", alignItems:"center", margin:5}}>
                             <View style={{flex:1}}>
-                                <Avatar
-                                    rounded
-                                    source={userIcon}
-                                    size={40}
-                                    color="grey"
-                                />
+                                <UserAvatar id={member.id} nom={member.nom}/>
                             </View>
                         <View style={{flex:5, flexDirection:"column"}}>
                             <Text>{member.nom}</Text>
                             <Text style={{color:"grey"}}>{member.email}</Text>
 
                         </View>
+                            <View style={{flex:1}}>
+                                {deleteIconVisible &&<Pressable onPress={deleteMember}>
+                                    <Icon
+                                        name='close'
+
+                                        size={22}
+                                        color='#eb4d4b'
+                                    />
+                                </Pressable>}
+                            </View>
 
 
                         </View>
 
-                    </View>
+                    </Pressable>
 
     );
             }
@@ -63,7 +107,7 @@ const ProjectMembers = ({members, projectId}) => {
 
 
             )}
-            {!addMemberModalVisible && <Pressable onPress={()=>setAddMemberModalVisible(true)}>
+            {/*{!addMemberModalVisible && <Pressable onPress={()=>setAddMemberModalVisible(true)}>
                  <View style={{}}>
                     <View style={{flexDirection:"row", alignItems:"center", margin:5}}>
                         <View style={{flex:1}}>
@@ -84,31 +128,46 @@ const ProjectMembers = ({members, projectId}) => {
                     </View>
 
                 </View>
-            </Pressable>}
+            </Pressable>}*/}
+            <View style={{marginVertical:20, marginHorizontal:15}}>
+                <View>
+                    <Button disabled={addMemberModalVisible}  title={"+ add member"} onPress={()=>setAddMemberModalVisible(true)}/>
+                </View>
+                <View style={{marginVertical:10}}>
+                    <Button  disabled={addMemberModalVisible}  title={"- remove member"} color="#eb4d4b" onPress={()=>setAddMemberModalVisible(true)}/>
+                </View>
+            </View>
             {
                 addMemberModalVisible &&
-                <View style={{}}>
+                <View style={{backgroundColor:"white", paddingBottom:10}}>
                     <View style={{flexDirection:"row", alignItems:"center", margin:5}}>
 
-                        <View style={{width:250, flexDirection:"row", alignItems:"center"}}>
+                        <View style={{flex:1, flexDirection:"column", alignItems:"center"}}>
                             <Input
+                                backgroundColor={"white"}
+                                style={{borderBottomWidth:0, borderRadius:10, margin:10, padding:10}}
                                 placeholder=' enter email of new user'
                                 value={newMemberEmail}
                                 onChangeText={(newEmail)=>setNewMemberEmail(newEmail)}
                                 leftIcon={
                                     <Icon
                                         name='mail'
-                                        size={24}
+                                        size={22}
                                         color='grey'
                                     />
                                 }
                             />
-                            <View style={{height:40}}>
-                                <Button  title="add" onPress={addMember}/>
+                            <View style={{flexDirection:"row" }}>
+                                <View style={{flex:1, marginHorizontal:20}}>
+                                <Button  title="add" onPress={addMember} />
+                                </View>
+                                <View style={{flex:1, marginHorizontal:20}}>
+                                <Button  title="cancel"  color="grey" onPress={()=>{
+                                    setAddMemberModalVisible(false)
+                                setNewMemberEmail("")}} />
                             </View>
-                            <View style={{height:40, marginLeft:5}}>
-                                <Button  title="cancel" color="grey" />
                             </View>
+
 
 
 
@@ -124,7 +183,7 @@ const ProjectMembers = ({members, projectId}) => {
 
 
 
-        </View>
+        </ScrollView>
 
     );
 }

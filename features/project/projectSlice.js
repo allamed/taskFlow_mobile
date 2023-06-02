@@ -52,12 +52,25 @@ export const updateProjectState = createAsyncThunk(
   }
 );
 
+export const updateProjectTitle = createAsyncThunk(
+    "allProjects/updateProjectTitle",
+    async (info, thunkAPI) => {
+      try {
+        const resp = await customFetch.post("/projets/majTitre", info);
+        return resp.data;
+      } catch (error) {
+        return thunkAPI.rejectWithValue(error.response.data);
+      }
+    }
+);
+
 export const createProject = createAsyncThunk(
   "allProjects/addNewProject",
   async (newProject, thunkAPI) => {
     let url = "/projets/creerProjet";
 
     try {
+        console.log(" trying to create newProject: ", newProject);
       const resp = await customFetch.post(url, newProject);
       return resp.data;
     } catch (error) {
@@ -126,14 +139,29 @@ const allProjectsSlice = createSlice({
       .addCase(createProject.fulfilled, (state, { payload }) => {
         state.isLoading = false;
         state.projects = [...state.projects, payload.projet];
-        console.log("projet créée");
+        console.log("projet créée avec succés");
         //toast.success("projet créé avec succès!");
       })
       .addCase(createProject.rejected, (state, { payload }) => {
         state.isLoading = false;
         console.log("projet non créé");
         //toast.error(payload);
-      });
+      }).addCase(updateProjectTitle.pending, (state) => {
+state.isLoading = true;
+})
+.addCase(updateProjectTitle.fulfilled, (state, { payload }) => {
+state.isLoading = false;
+state.projects = state.projects.map((project) => {
+if (project.id == payload.projet.id)
+return { ...project, titre: payload.projet.titre };
+return project;
+});
+
+}).addCase(updateProjectTitle.rejected, (state, { payload }) => {
+state.isLoading = false;
+//toast.error(payload);
+
+    });
     /*.addCase(getTasksByProject.pending, (state) => {})
       .addCase(getTasksByProject.fulfilled, (state, { payload }) => {
         state.isLoading = false;

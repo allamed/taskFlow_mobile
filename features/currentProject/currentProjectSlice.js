@@ -68,6 +68,22 @@ export const addMemberToProject = createAsyncThunk(
   }
 );
 
+export const removeMemberFromProject = createAsyncThunk(
+    "allProjects/getProjects/removeMember",
+    async (data, thunkAPI) => {
+        let url = `/projets/supprimerMembre`;
+
+        try {
+            const resp = await customFetch.post(url, data);
+            // console.log("postrequest sent");
+            return resp.data;
+        } catch (error) {
+            return ;
+        }
+
+    }
+);
+
 export const updateTaskState = createAsyncThunk(
   "allTasks/updateTaskState",
   async (info, thunkAPI) => {
@@ -372,11 +388,22 @@ const currentProjectSlice = createSlice({
       .addCase(updateTaskProgress.rejected, (state, { payload }) => {
         state.isLoading = false;
 
-      });
-    /* .addCase(getCurrentProject, (state, payload) => {
-        state.isLoading = false;
-        state.project = payload;
-      }) */
+      })
+  .addCase(removeMemberFromProject.pending, (state) => {
+        state.isLoading = true;
+      }
+    )
+        .addCase(removeMemberFromProject.fulfilled, (state, { payload }) => {
+            state.isLoading = false;
+            state.members = state.members.filter(
+                (member) => member.id !== payload.membre.id
+            );
+            }
+        )
+        .addCase(removeMemberFromProject.rejected, (state, { payload }) => {
+            state.isLoading = false;
+            }
+        );
   },
 });
 export default currentProjectSlice.reducer;
