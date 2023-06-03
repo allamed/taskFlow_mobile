@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 import customFetch, { checkForUnauthorizedResponse } from "../../utils/axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 const initialState = {
@@ -113,7 +114,27 @@ const userSlice = createSlice({
       .addCase(getUserParticipationProjects.rejected, (state, { payload }) => {
         state.isLoading = false;
       //  toast.error(payload);
-      });
+      })
+
+        .addCase(getUser.pending, (state) => {
+            state.isLoading = true;
+        })
+        .addCase(getUser.fulfilled, (state, { payload }) => {
+            state.isLoading = false;
+            state.user= payload;
+
+            console.log(payload);
+
+        })
+        .addCase(getUser.rejected, (state, { payload }) => {
+            state.isLoading = false;
+            //  toast.error(payload);
+        })
+
+
+
+
+    ;
   },
 });
 
@@ -172,6 +193,21 @@ export const getUserParticipationProjects = createAsyncThunk(
       return thunkAPI.rejectWithValue(error.response.data);
     }
   }
+);
+
+export const getUser = createAsyncThunk(
+    "user",
+    async (_, thunkAPI) => {
+      //TO DO (get user id from local storage)
+      const id = await AsyncStorage.getItem('userId');
+      try {
+        const resp = await customFetch.get(`/utilisateurs/${id}`);
+
+        return resp.data;
+      } catch (error) {
+        return thunkAPI.rejectWithValue(error.response.data);
+      }
+    }
 );
 
 const { logoutUser } = userSlice.actions;

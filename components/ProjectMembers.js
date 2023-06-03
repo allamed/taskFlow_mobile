@@ -16,6 +16,7 @@ const ProjectMembers = ({ projectId, members}) => {
     const [deleteIconVisible, setDeleteIconVisible]=useState(false);
     const [memberToDelete, setMemberToDelete]=useState(null);
     const dispatch = useDispatch();
+    const [taskPressed, setTaskPressed]=useState(0);
     let email="";
     let id=0;
     const fetchUser = async () => {
@@ -84,17 +85,31 @@ const ProjectMembers = ({ projectId, members}) => {
 
 
     return(
-        <ScrollView style={{margin:25}} contentContainerStyle={{alignContent:"center", flex:1}}>
+
+
+
+        <ScrollView style={{margin:25}} contentContainerStyle={{alignContent:"center", flex:1}}
+
+        >
 
             {projectMembers.map((member)=>{
                 return (
-                    <Pressable style={{}} key={member.id} onLongPress={
+                    <Pressable style={{
+                        backgroundColor: taskPressed==member.id && "lightgrey",
+                    }} key={member.id}
+                               onLongPress={
                         ()=>{
                             setDeleteIconVisible(true);
                             setMemberToDelete(member);
+                            //setTaskPressed(member.id);
                         }
                     }
                     delayLongPress={1000}
+                               onTouchCancel ={
+                                      ()=>{
+                                          setTaskPressed(0);
+                               }
+                    }
                     >
                         <View style={{flexDirection:"row", alignItems:"center", margin:5}}>
                             <View style={{flex:1}}>
@@ -204,6 +219,7 @@ const ProjectMembers = ({ projectId, members}) => {
 
 
         </ScrollView>
+
 
     );
 }
