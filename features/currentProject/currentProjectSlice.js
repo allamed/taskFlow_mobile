@@ -391,6 +391,7 @@ const currentProjectSlice = createSlice({
       })
   .addCase(removeMemberFromProject.pending, (state) => {
         state.isLoading = true;
+        console.log("suppression du membre en cours");
       }
     )
         .addCase(removeMemberFromProject.fulfilled, (state, { payload }) => {
@@ -398,10 +399,12 @@ const currentProjectSlice = createSlice({
             state.members = state.members.filter(
                 (member) => member.id !== payload.membre.id
             );
+            console.log("membre supprimé");
             }
         )
         .addCase(removeMemberFromProject.rejected, (state, { payload }) => {
             state.isLoading = false;
+            console.log("erreur lors de la suppression du membre");
             }
         );
   },

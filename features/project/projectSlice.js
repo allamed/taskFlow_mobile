@@ -79,6 +79,37 @@ export const createProject = createAsyncThunk(
   }
 );
 
+export const addMemberToProject = createAsyncThunk(
+    "allProjects/getProjects/addMember",
+    async (data, thunkAPI) => {
+        let url = `/projets/ajouterMembre`;
+
+        try {
+            const resp = await customFetch.post(url, data);
+            // console.log("postrequest sent");
+            return resp.data;
+        } catch (error) {
+            return ;
+        }
+    }
+);
+
+export const removeMemberFromProject = createAsyncThunk(
+    "allProjects/getProjects/removeMember",
+    async (data, thunkAPI) => {
+        let url = `/projets/supprimerMembre`;
+
+        try {
+            const resp = await customFetch.post(url, data);
+            // console.log("postrequest sent");
+            return resp.data;
+        } catch (error) {
+            return ;
+        }
+
+    }
+);
+
 const allProjectsSlice = createSlice({
   name: "allProjects",
   initialState,
@@ -109,6 +140,7 @@ const allProjectsSlice = createSlice({
       .addCase(getAllProjects.fulfilled, (state, { payload }) => {
         state.isLoading = false;
         state.projects = payload.projets;
+
        // state.totalProjects = payload.projets.length;
         console.log("payload: ", state.projects);
       })
@@ -155,7 +187,46 @@ state.projects = state.projects.map((project) => {
 if (project.id == payload.projet.id)
 return { ...project, titre: payload.projet.titre };
 return project;
-});
+}).addCase(removeMemberFromProject.pending, (state) => {
+        state.isLoading = true;
+        console.log("suppression du membre en cours");
+    }
+)
+    .addCase(removeMemberFromProject.fulfilled, (state, { payload }) => {
+            state.isLoading = false;
+            state.projects = state.projects.map((project) => {
+                    if (project.id == payload.projet.id)
+                        return payload.projet;
+                    return project;
+                }
+            )
+
+            console.log("membre supprimé");
+        }
+    )
+    .addCase(removeMemberFromProject.rejected, (state, { payload }) => {
+            state.isLoading = false;
+            console.log("erreur lors de la suppression du membre");
+        }
+    ).addCase(addMemberToProject.pending, (state) => {
+        state.isLoading = true;
+    })
+    .addCase(addMemberToProject.fulfilled, (state, { payload }) => {
+        state.isLoading = false;
+        state.projects = state.projects.map((project) => {
+            if (project.id == payload.projet.id)
+                return payload.projet;
+            return project;
+
+        }
+        )
+
+
+    })
+    .addCase(addMemberToProject.rejected, (state, { payload }) => {
+        state.isLoading = false;
+
+    });
 
 }).addCase(updateProjectTitle.rejected, (state, { payload }) => {
 state.isLoading = false;

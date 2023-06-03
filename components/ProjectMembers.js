@@ -2,19 +2,38 @@ import {View, Text, Pressable, Modal, TouchableOpacity, Button, ScrollView, Aler
 import {Avatar, Input} from "@rneui/base";
 import userIcon from "../assets/usericon.png"
 import {Icon} from "@rneui/themed";
-import React, {useState} from "react";
-import {useDispatch} from "react-redux";
-import {addMemberToProject, removeMemberFromProject} from "../features/currentProject/currentProjectSlice";
+import React, {useEffect, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import {addMemberToProject, getAllProjects, removeMemberFromProject} from "../features/project/projectSlice";
 import UserAvatar from "./ui/UserAvatar";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const ProjectMembers = ({members, projectId}) => {
+const ProjectMembers = ({ projectId, members}) => {
+
+    const [projectMembers, setProjectMembers]=useState(members);
     const [addMemberModalVisible, setAddMemberModalVisible]=useState(false);
     const [newMemberEmail, setNewMemberEmail]=useState("")
     const [deleteIconVisible, setDeleteIconVisible]=useState(false);
     const [memberToDelete, setMemberToDelete]=useState(null);
     const dispatch = useDispatch();
+    let email="";
+    let id=0;
+    const fetchUser = async () => {
+        id = await AsyncStorage.getItem('userId');
+        email = await AsyncStorage.getItem('email');
 
+
+
+    }
+    useEffect(
+        () => {
+            fetchUser();
+        }, []
+    )
     const addMember=()=>{
+
+
+
         // dispatch add member action
         if (members.find((x) => x.email == newMemberEmail) != null) {
             Alert.alert('Alert ', 'this user is already a member of this project');
@@ -27,6 +46,7 @@ const ProjectMembers = ({members, projectId}) => {
         dispatch(addMemberToProject(data));
         setNewMemberEmail("");
         setAddMemberModalVisible(false);
+        setProjectMembers([...projectMembers, {email:newMemberEmail, id:0, nom:""}]);
 
 
     }
@@ -46,12 +66,12 @@ const ProjectMembers = ({members, projectId}) => {
                 },
                 { text: "OK", onPress: () => {
                         // dispatch delete member action
-                        dispatch(removeMemberFromProject({
-                            id: projectId,
-                            email: memberToDelete.email
-                        }));
+                        console.log ("member to delete : " + memberToDelete.email + " from project : " + projectId);
+                        const data = { email:memberToDelete.email, id: projectId };
+                        dispatch(removeMemberFromProject(data));
+                        setProjectMembers(projectMembers.filter((x) => x.email != memberToDelete.email)
+                        );
 
-                        console.log("delete member");
                     } }
             ]
         );
@@ -66,7 +86,7 @@ const ProjectMembers = ({members, projectId}) => {
     return(
         <ScrollView style={{margin:25}} contentContainerStyle={{alignContent:"center", flex:1}}>
 
-            {members.map((member)=>{
+            {projectMembers.map((member)=>{
                 return (
                     <Pressable style={{}} key={member.id} onLongPress={
                         ()=>{
