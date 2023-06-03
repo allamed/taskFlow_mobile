@@ -1,4 +1,4 @@
-import {View, Text, ScrollView, Pressable, Modal, TextInput, StyleSheet} from "react-native";
+import {View, Text, ScrollView, Pressable, Modal, TextInput, StyleSheet, TouchableOpacity} from "react-native";
 import UserAvatar from "./ui/UserAvatar";
 import React, {useState} from "react";
 import {Avatar} from "@rneui/themed";
@@ -103,12 +103,16 @@ const ProjectTasks = ({tasks}) => {
                 animationType="slide"
                 transparent={true}
                 >
-                    <View style={styles.modalContent}>
-                        <View style={{flexDirection:"row", alignItems:"center", margin:5}}>
-                            <Text style={{flex:1, margin:5}}>Task title</Text>
-                            <TextInput style={{flex:5, margin:5}}/>
+                    <View style={styles.modalContainer}>
 
-
+                        <View style={styles.modalContent}>
+                            <View style={styles.modalHeader}>
+                                <Text style={styles.modalHeaderText}>Task Description</Text>
+                            </View>
+                            <Text style={styles.modalText}>some text</Text>
+                            <TouchableOpacity onPress={()=>setNewTaskModalVisible(false)}>
+                                <Text style={styles.modalClose}>Close</Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
                 </Modal>
