@@ -23,7 +23,44 @@ const CurrentTask = ({ route , currentTask}) => {
     const [taskStatusButtonColor, setTaskStatusButtonColor] = useState('#000000');
     const [taskStatusButtonTextColor, setTaskStatusButtonTextColor] = useState('#FFFFFF');
 
-    const [progress, setProgress] = useState(task.avancement);
+    const [progress, setProgress] = useState(0);
+    // convert from percentage to an integer between 0 and 6
+    const percentageToInteger = (percentage) => {
+        if (percentage === 0) {
+            return 0;
+        } else if (percentage > 0 && percentage < 20) {
+            return 1;
+        } else if (percentage >= 20 && percentage < 40) {
+            return 2;
+        } else if (percentage >= 40 && percentage < 60) {
+            return 3;
+        } else if (percentage >= 60 && percentage < 80) {
+            return 4;
+        } else if (percentage >= 80 && percentage < 100) {
+            return 5;
+        } else if (percentage === 100) {
+            return 6;
+        }
+    }
+    // convert from an integer between 0 and 6 to a percentage
+    const integerToPercentage = (integer) => {
+        if (integer === 0) {
+            return 0;
+        } else if (integer === 1) {
+            return 10;
+        } else if (integer === 2) {
+            return 30;
+        } else if (integer === 3) {
+            return 50;
+        } else if (integer === 4) {
+            return 70;
+        } else if (integer === 5) {
+            return 90;
+        } else if (integer === 6) {
+            return 100;
+        }
+    }
+    const [graphicProgress, setGraphicProgress] = useState(percentageToInteger(currentTask.avancement));
 
     const [modalVisible, setModalVisible] = useState(false);
     const [inputIsVisible, setInputIsVisible] = useState(false);
@@ -129,10 +166,12 @@ const CurrentTask = ({ route , currentTask}) => {
             { cancelable: false }
         );
     }
+    const arr=[1,2,3,4,5,6];
 
 
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView >
+            <View style={styles.container}>
 
 
             {/*<View style={styles.taskDetails}>
@@ -252,6 +291,25 @@ const CurrentTask = ({ route , currentTask}) => {
                         <Text style={styles.menuItemText}>{progress} %</Text>
                     </View>
                 </TouchableRipple>
+                <View style={{flex:1, flexDirection:"row", margin: 5}}>
+                {arr.map(
+                    (item, index) => {
+                        return(
+                            <TouchableRipple onPress={() => {
+                                setGraphicProgress(index+1);
+                                setProgress(integerToPercentage(index+1));
+                            }} style={{margin:4,flex:1,
+                                backgroundColor: (index+1) <= graphicProgress ? "#20bf6b" : "#d1d8e0",
+                                height:15, borderRadius:3}}>
+                            <View >
+                            </View>
+                            </TouchableRipple>
+
+                )} )
+                    }
+                    </View>
+
+
                 <Input
                     backgroundColor={"#dff9fb"}
                     style={{borderBottomWidth:0, borderRadius:10, margin:5, backgroundColor:"#dff9fb"}}
@@ -304,6 +362,7 @@ taskStatus === 'EN_COURS' && (
             <View style={{height:300}}>
 
             </View>
+        </View>
         </ScrollView>
     );
 
@@ -315,7 +374,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
         flex: 1,
         flexWrap: 'wrap',
-
+        flexDirection: 'column',
+        alignItems: 'center',
 
     },
     header: {
@@ -445,7 +505,7 @@ alignItems: 'flex-start',
     taskButtons: {
 
         width: '100%',
-
+        height: 100,flex:1,
         backgroundColor: '#FFFFFF',
         alignItems: 'center',
         justifyContent: 'center',
