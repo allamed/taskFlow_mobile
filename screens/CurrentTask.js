@@ -6,7 +6,9 @@ import { useNavigation } from '@react-navigation/native';
 import {Icon} from "@rneui/themed";
 import {updateTaskProgress, updateTaskState} from "../features/tasks/allTasksSlice";
 import {useDispatch} from "react-redux";
-import {Button} from "@rneui/base";
+import {Button, Input} from "@rneui/base";
+import {TouchableRipple} from "react-native-paper";
+import {GlobalStyles} from "../utils/globalStyles";
 
 
 const CurrentTask = ({ route , currentTask}) => {
@@ -130,22 +132,21 @@ const CurrentTask = ({ route , currentTask}) => {
 
 
     return (
-        <View style={styles.container}>
-            {/*<View style={styles.header}>
-                <Text style={styles.headerText}>Task Details</Text>
-            </View>*/}
-            <View style={styles.taskDetails}>
+        <ScrollView style={styles.container}>
+
+
+            {/*<View style={styles.taskDetails}>
                 <View style={styles.taskDetailsRow}>
                     <View style={styles.taskDetailsLabelContainer}>
                      <Icon name="title" type="materiel" color="grey" size={30} />
-                     {/*<Text style={styles.taskDetailsLabel}>Title: </Text>*/}
+                     <Text style={styles.taskDetailsLabel}>Title: </Text>
                     </View>
                     <Text style={styles.taskDetailsText}>{task.name}</Text>
                 </View>
                 <View style={styles.taskDetailsRow}>
                     <View style={styles.taskDetailsLabelContainer}>
                     <Icon name="description" type="materiel" color="grey" size={30} />
-                    {/*<Text style={styles.taskDetailsLabel}>Task Description: </Text>*/}
+                    <Text style={styles.taskDetailsLabel}>Task Description: </Text>
                     </View>
                     <Text style={styles.taskDetailsText} numberOfLines={1}>{task.description}</Text>
                     {task.description.length > 40 && (
@@ -160,21 +161,21 @@ const CurrentTask = ({ route , currentTask}) => {
                 <View style={styles.taskDetailsRow}>
                     <View style={styles.taskDetailsLabelContainer}>
                     <Icon name='list-status' type='material-community' color="grey" size={30} />
-                    {/*<Text style={styles.taskDetailsLabel}>Task Status: </Text>*/}
+                    <Text style={styles.taskDetailsLabel}>Task Status: </Text>
                     </View>
                     <Text style={[styles.taskDetailsText, { color: taskStatusColor }]}>{taskStatusText}</Text>
                 </View>
                 <View style={styles.taskDetailsRow}>
                     <View style={styles.taskDetailsLabelContainer}>
                         <Icon name='calendar-plus-o' type='font-awesome' color="grey" size={25} />
-                        {/*<Text style={styles.taskDetailsLabel}>Task Created Date: </Text>*/}
+                        <Text style={styles.taskDetailsLabel}>Task Created Date: </Text>
                     </View>
                     <Text style={styles.taskDetailsText}>{task.debut}</Text>
                 </View>
                 <View style={styles.taskDetailsRow}>
                     <View style={styles.taskDetailsLabelContainer}>
                     <Icon name='calendar-check-o' type='font-awesome' color="grey" size={25} />
-                    {/*<Text style={styles.taskDetailsLabel}>Task Due Date: </Text>*/}
+                    <Text style={styles.taskDetailsLabel}>Task Due Date: </Text>
                     </View>
                     <Text style={styles.taskDetailsText}>{task.deadLine}</Text>
                 </View>
@@ -202,7 +203,74 @@ const CurrentTask = ({ route , currentTask}) => {
                     </View>
                 ) }
                 </View>
+            </View>*/}
+
+
+            <View style={styles.menuWrapper}>
+                <TouchableRipple onPress={() => {} } style={{ height:13}}>
+                    <View style={{flex: 1, flexDirection:"row", backgroundColor:"#d1d8e0"}}>
+                        <View style={{flex: (parseInt(progress) /100), backgroundColor:"#20bf6b"}}>
+
+                        </View>
+                    </View>
+                </TouchableRipple>
+                <TouchableRipple onPress={() => {}}>
+                    <View style={styles.menuItem}>
+                        <Icon name="title" color={GlobalStyles.colors.primary600} size={25}/>
+                        <Text style={styles.menuItemText}>{task.name}</Text>
+                    </View>
+                </TouchableRipple>
+                <TouchableRipple onPress={() => {}} >
+                    <View style={styles.menuItem}>
+                        <Icon name="description" color={GlobalStyles.colors.primary600} size={25}/>
+                        <Text style={styles.menuItemText}>{task.description}</Text>
+                    </View>
+                </TouchableRipple>
+                <TouchableRipple onPress={() => {}} >
+                    <View style={styles.menuItem}>
+                        <Icon name='calendar-plus-o' type='font-awesome' color={GlobalStyles.colors.primary600} size={25}/>
+                        <Text style={styles.menuItemText}> was assigned to you on {task.debut}</Text>
+                    </View>
+                </TouchableRipple>
+                <TouchableRipple onPress={() => {}}  >
+                    <View style={styles.menuItem}>
+                        <Icon name='list-status' type='material-community' color={GlobalStyles.colors.primary600} size={25}/>
+                        <Text style= {[styles.menuItemText, { color: taskStatusColor }]}  >{taskStatusText}</Text>
+                    </View>
+                </TouchableRipple>
+
+                <TouchableRipple onPress={() => {}} style={{backgroundColor:"#ffda79"}}>
+                    <View style={styles.menuItem}>
+                        <Icon name='calendar-check-o' type='font-awesome' color={GlobalStyles.colors.primary600} size={25}/>
+                        <Text style={styles.menuItemText}> deadline : {task.deadLine}</Text>
+                    </View>
+                </TouchableRipple>
+
+                <TouchableRipple onPress={() => {}}>
+                    <View style={styles.menuItem}>
+                        <Icon name='progress-check' type='material-community' color={GlobalStyles.colors.primary600} size={25}/>
+                        <Text style={styles.menuItemText}>{progress} %</Text>
+                    </View>
+                </TouchableRipple>
+                <Input
+                    backgroundColor={"#dff9fb"}
+                    style={{borderBottomWidth:0, borderRadius:10, margin:5, backgroundColor:"#dff9fb"}}
+                    placeholder='INPUT WITH CUSTOM ICON'
+                    value={'  ' }
+
+                    leftIcon={
+                        <Icon
+                            name='calendar-plus-o'
+                            type='font-awesome'
+                            size={24}
+                            color={GlobalStyles.colors.primary600}
+                        />
+                    }
+                />
+
             </View>
+
+
             <View style={styles.taskButtons}>
                 <TouchableOpacity style={[styles.taskButton, { backgroundColor: taskStatusButtonColor }]} onPress={changeTaskStatus}>
                     <Text style={[styles.taskButtonText, { color: taskStatusButtonTextColor }]}>{taskStatusButton}</Text>
@@ -233,7 +301,10 @@ taskStatus === 'EN_COURS' && (
                     </View>
                 </View>
             </Modal>
-        </View>
+            <View style={{height:300}}>
+
+            </View>
+        </ScrollView>
     );
 
 }
@@ -494,7 +565,23 @@ alignItems: 'flex-start',
     taskButtonTextReopenTask: {
         fontSize: 20,
         color: '#FFFFFF',
-    },
+    }
+    ,
+    menuWrapper: {
+    marginTop: 5,
+},
+menuItem: {
+    flexDirection: 'row',
+        paddingVertical: 15,
+        paddingHorizontal: 30,
+},
+menuItemText: {
+    color: '#535c68',
+        marginLeft: 20,
+        fontWeight: '600',
+        fontSize: 16,
+        lineHeight: 26,
+},
 
 
 
