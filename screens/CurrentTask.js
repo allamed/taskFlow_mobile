@@ -22,8 +22,9 @@ const CurrentTask = ({ route , currentTask}) => {
     const [taskStatusButton, setTaskStatusButton] = useState('Start Task');
     const [taskStatusButtonColor, setTaskStatusButtonColor] = useState('#000000');
     const [taskStatusButtonTextColor, setTaskStatusButtonTextColor] = useState('#FFFFFF');
+    const [progressUpdated, setProgressUpdated] = useState(false);
 
-    const [progress, setProgress] = useState(0);
+    const [progress, setProgress] = useState(currentTask.avancement);
     // convert from percentage to an integer between 0 and 6
     const percentageToInteger = (percentage) => {
         if (percentage === 0) {
@@ -70,14 +71,12 @@ const CurrentTask = ({ route , currentTask}) => {
 
 
 
-    const toggleModal = () => {
-        setModalVisible(!modalVisible);
-    };
+
 
 
     useEffect(() => {
         // En_ATTENTE, EN_COURS, ATTENTE_VALIDATION,VALIDEE
-        if (taskStatus === 'En_ATTENTE') {
+        if (taskStatus === 'EN_ATTENTE') {
             setTaskStatusColor('#000000');
             setTaskStatusText('Not Started');
             setTaskStatusButton('Start Task');
@@ -109,12 +108,26 @@ const CurrentTask = ({ route , currentTask}) => {
     const updateState = ( newState) => {
         const info = { idTache: task.id, nouveauEtat: newState };
         dispatch(updateTaskState(info));
+
     };
 
     const updateProgress = () => {
         const info = { taskId: task.id, newProgres: progress };
         dispatch(updateTaskProgress(info));
-        setInputIsVisible(false);
+
+        if ( progress>0 && progress<100){
+            setTaskStatus('EN_COURS');
+            updateState(2);
+        }
+        else if ( progress===100){
+            setTaskStatus('ATTENTE_VALIDATION');
+            updateState(3);
+        }
+
+        else if (progress===0){
+            setTaskStatus('EN_ATTENTE');
+            updateState(1);
+        }
     }
 
     const changeTaskStatus = () => {
@@ -130,26 +143,7 @@ const CurrentTask = ({ route , currentTask}) => {
 
     }
 
-    const changeProgress = (newProgress) => {
-        // check if new progress is a number
-        if (isNaN(newProgress)) {
-            return;
-        }
 
-        //ensure new progress is between 0 and 100 and is a number
-        if (newProgress < 0) {
-            newProgress = 0;
-        } else if (newProgress > 100) {
-            newProgress = 100;
-        } else if (newProgress % 1 !== 0) {
-            newProgress = Math.round(newProgress);
-        }
-
-
-        setProgress(newProgress);
-
-
-    }
     const deleteTask = () => {
         Alert.alert(
             "Delete Task ",
@@ -173,76 +167,6 @@ const CurrentTask = ({ route , currentTask}) => {
         <ScrollView >
             <View style={styles.container}>
 
-
-            {/*<View style={styles.taskDetails}>
-                <View style={styles.taskDetailsRow}>
-                    <View style={styles.taskDetailsLabelContainer}>
-                     <Icon name="title" type="materiel" color="grey" size={30} />
-                     <Text style={styles.taskDetailsLabel}>Title: </Text>
-                    </View>
-                    <Text style={styles.taskDetailsText}>{task.name}</Text>
-                </View>
-                <View style={styles.taskDetailsRow}>
-                    <View style={styles.taskDetailsLabelContainer}>
-                    <Icon name="description" type="materiel" color="grey" size={30} />
-                    <Text style={styles.taskDetailsLabel}>Task Description: </Text>
-                    </View>
-                    <Text style={styles.taskDetailsText} numberOfLines={1}>{task.description}</Text>
-                    {task.description.length > 40 && (
-                        <>
-                            <TouchableOpacity onPress={toggleModal}>
-                                <Text style={styles.showMore}>{'Show More'}</Text>
-                            </TouchableOpacity>
-
-                        </>
-                    )}
-                </View>
-                <View style={styles.taskDetailsRow}>
-                    <View style={styles.taskDetailsLabelContainer}>
-                    <Icon name='list-status' type='material-community' color="grey" size={30} />
-                    <Text style={styles.taskDetailsLabel}>Task Status: </Text>
-                    </View>
-                    <Text style={[styles.taskDetailsText, { color: taskStatusColor }]}>{taskStatusText}</Text>
-                </View>
-                <View style={styles.taskDetailsRow}>
-                    <View style={styles.taskDetailsLabelContainer}>
-                        <Icon name='calendar-plus-o' type='font-awesome' color="grey" size={25} />
-                        <Text style={styles.taskDetailsLabel}>Task Created Date: </Text>
-                    </View>
-                    <Text style={styles.taskDetailsText}>{task.debut}</Text>
-                </View>
-                <View style={styles.taskDetailsRow}>
-                    <View style={styles.taskDetailsLabelContainer}>
-                    <Icon name='calendar-check-o' type='font-awesome' color="grey" size={25} />
-                    <Text style={styles.taskDetailsLabel}>Task Due Date: </Text>
-                    </View>
-                    <Text style={styles.taskDetailsText}>{task.deadLine}</Text>
-                </View>
-
-                <View style={styles.taskDetailsRow} >
-                    <View style={styles.taskDetailsLabelContainer}>
-                        <Icon name='progress-check' type='material-community' color="grey" size={30} />
-                        <Text style={styles.taskDetailsLabel}> </Text>
-                    </View>
-                    {!inputIsVisible && (
-                        <Text style={styles.taskDetailsText}>{progress} %</Text>
-                    )}
-
-
-                    {inputIsVisible && (
-                    <View style={{ flexDirection:"row", height: "100%" }} >
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={changeProgress}
-                        value={task.avancement}
-
-                        keyboardType="numeric"
-                    />
-                        <Button title="Update" onPress={updateProgress} style={{alignItems:"center", paddingVertical:0}}> <Text style={{fontSize:11, paddingVertical:0, height:"100%", color:"white" }}>OK</Text> </Button>
-                    </View>
-                ) }
-                </View>
-            </View>*/}
 
 
             <View style={styles.menuWrapper}>
@@ -296,8 +220,16 @@ const CurrentTask = ({ route , currentTask}) => {
                     (item, index) => {
                         return(
                             <TouchableRipple onPress={() => {
+                                if (graphicProgress == index+1){
+                                    setGraphicProgress(index);
+                                    setProgress(integerToPercentage(index));
+                                }
+                                else {
+
                                 setGraphicProgress(index+1);
                                 setProgress(integerToPercentage(index+1));
+                                }
+                                setProgressUpdated(true)
                             }} style={{margin:4,flex:1,
                                 backgroundColor: (index+1) <= graphicProgress ? "#20bf6b" : "#d1d8e0",
                                 height:15, borderRadius:3}}>
@@ -310,55 +242,33 @@ const CurrentTask = ({ route , currentTask}) => {
                     </View>
 
 
-                <Input
-                    backgroundColor={"#dff9fb"}
-                    style={{borderBottomWidth:0, borderRadius:10, margin:5, backgroundColor:"#dff9fb"}}
-                    placeholder='INPUT WITH CUSTOM ICON'
-                    value={'  ' }
-
-                    leftIcon={
-                        <Icon
-                            name='calendar-plus-o'
-                            type='font-awesome'
-                            size={24}
-                            color={GlobalStyles.colors.primary600}
-                        />
-                    }
-                />
 
             </View>
 
 
             <View style={styles.taskButtons}>
-                <TouchableOpacity style={[styles.taskButton, { backgroundColor: taskStatusButtonColor }]} onPress={changeTaskStatus}>
-                    <Text style={[styles.taskButtonText, { color: taskStatusButtonTextColor }]}>{taskStatusButton}</Text>
-                </TouchableOpacity>
-                {
-taskStatus === 'EN_COURS' && (
-                        <TouchableOpacity style={[styles.taskButton, { backgroundColor: taskStatusButtonColor }]} onPress={()=>{
-                            setInputIsVisible(!inputIsVisible)} }>
-                            <Text style={[styles.taskButtonText, { color: taskStatusButtonTextColor }]}>Update progress</Text>
-                        </TouchableOpacity>)
-                }
+                <Button style={{backgroundColor:"#ffda79", margin:5, width:"40%", height:20}}
+                        disabled={(taskStatus == 'Completed' || !progressUpdated) }
+
+                                  onPress={()=>{
+                                        updateProgress();
+                                        setProgressUpdated(false);
+
+
+                                  } }>
+                    Update progress
+                </Button>
+
+
+
+
+
 
                {/* <TouchableOpacity style={[styles.taskButton, { backgroundColor: '#FF0000' }]} onPress={deleteTask}>
                     <Text style={[styles.taskButtonText, { color: '#FFFFFF' }]}>Delete Task</Text>
                 </TouchableOpacity>*/}
             </View>
-            <Modal visible={modalVisible} animationType="slide" transparent={true}>
-                <View style={styles.modalContainer}>
 
-                    <View style={styles.modalContent}>
-                        <View style={styles.modalHeader}>
-                            <Text style={styles.modalHeaderText}>Task Description</Text>
-                        </View>
-                        <Text style={styles.modalText}>{task.description}</Text>
-                        <TouchableOpacity onPress={toggleModal}>
-                            <Text style={styles.modalClose}>Close</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
             <View style={{height:300}}>
 
             </View>
@@ -372,10 +282,10 @@ const styles = StyleSheet.create({
     container: {
 
         backgroundColor: '#FFFFFF',
-        flex: 1,
+
         flexWrap: 'wrap',
         flexDirection: 'column',
-        alignItems: 'center',
+
 
     },
     header: {
