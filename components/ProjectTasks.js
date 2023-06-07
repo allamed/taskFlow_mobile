@@ -1,11 +1,25 @@
-import {View, Text, ScrollView, Pressable, Modal, TextInput, StyleSheet, TouchableOpacity} from "react-native";
+import {
+    View,
+    Text,
+    ScrollView,
+    Pressable,
+    Modal,
+    TextInput,
+    StyleSheet,
+    TouchableOpacity,
+    Platform
+} from "react-native";
 import UserAvatar from "./ui/UserAvatar";
 import React, {useState} from "react";
-import {Avatar} from "@rneui/themed";
+import {Avatar, Icon} from "@rneui/themed";
 import {stringToColor} from "../utils/utilsFunctions";
 import CurrentTask from "../screens/CurrentTask";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
-import {Button} from "@rneui/base";
+import {Button, Input} from "@rneui/base";
+import {GlobalStyles} from "../utils/globalStyles";
+import DropDownPicker from "react-native-dropdown-picker";
+import DateTimePicker, {DateTimePickerAndroid} from "@react-native-community/datetimepicker";
+import {TouchableRipple} from "react-native-paper";
 const taskStatus=(status)=>{
     //En_ATTENTE, EN_COURS, ATTENTE_VALIDATION,VALIDEE
     switch (status) {
@@ -43,11 +57,42 @@ const taskStatus=(status)=>{
     }
 }
 
-const ProjectTasks = ({tasks}) => {
+const ProjectTasks = ({tasks, members}) => {
     const [currentTask, setCurrentTask] = useState('initial value');
     const Stack = createNativeStackNavigator();
+    const [show, setShow] = useState(false);
+
     const AllProjectTasks = ({tasks}) => {
+        const [open, setOpen] = useState(false);
+        const [newTaskResponsible, setNewTaskResponsible] = useState('');
+        const [items, setItems] = useState(members.map((member)=>({
+            label: member.nom,
+            value: member.nom,
+        })));
+
         const [newTaskModalVisible, setNewTaskModalVisible] = useState(false);
+        const [newTaskDeadLine, setNewTaskDeadLine] = useState(new Date());
+        const [newTaskTitle, setNewTaskTitle] = useState("");
+
+        const [mode, setMode] = useState('date');
+        const [show, setShow] = useState(false);
+
+        const onChange = (event, selectedDate) => {
+            const currentDate = selectedDate || date;
+            setShow(Platform.OS === 'ios');
+            setNewTaskDeadLine(currentDate);
+        };
+
+        const showMode = (currentMode) => {
+            setShow(true);
+            setMode(currentMode);
+        };
+
+        const showDatepicker = () => {
+            showMode('date');
+        };
+        let tempTaskTitle = "";
+
         return(
             <ScrollView style={{marginVertical:5}}>
 
@@ -106,13 +151,120 @@ const ProjectTasks = ({tasks}) => {
                     <View style={styles.modalContainer}>
 
                         <View style={styles.modalContent}>
-                            <View style={styles.modalHeader}>
-                                <Text style={styles.modalHeaderText}>Task Description</Text>
+
+                            <Text style={styles.modalText}>New task</Text>
+
+                            <View style={{marginHorizontal:10}}>
+
+
+                            <Text style={{fontWeight:"bold", color:"gray", fontStyle:"italic", fontSize:12, marginLeft:15}}>Task title</Text>
+                            <Input
+                                backgroundColor={"white"}
+                                style={{borderWidth:0.5, borderRadius:10, margin:5, borderColor:"gray", padding:10, fontSize:15}}
+                                placeholder='enter task title'
+                                defaultValue={newTaskTitle}
+
+                                onChangeText={(text)=>
+                                    tempTaskTitle=text
+                            }
+                                onEndEditing={()=>{
+                                    setNewTaskTitle(tempTaskTitle);
+                                    console.log("new task title : "+ newTaskTitle);
+                                }
+                                }
+
+                            />
                             </View>
-                            <Text style={styles.modalText}>some text</Text>
-                            <TouchableOpacity onPress={()=>setNewTaskModalVisible(false)}>
-                                <Text style={styles.modalClose}>Close</Text>
-                            </TouchableOpacity>
+                            <View style={{marginHorizontal:25,
+
+
+                            zIndex:5000}}>
+                                <Text style={{fontWeight:"bold", color:"gray", fontStyle:"italic", fontSize:12, marginBottom:3}}>Assigned to </Text>
+
+
+
+                                <DropDownPicker
+                                style={{borderWidth:0.5, borderRadius:10,  borderColor:"gray", height:50}}
+                                placeholder="Select a member"
+
+
+
+
+
+
+
+                                open={open}
+                                value={newTaskResponsible}
+                                items={items}
+                                setOpen={setOpen}
+                                setValue={setNewTaskResponsible}
+                                setItems={setItems}
+                                mode={"BADGE"}
+                                theme={"LIGHT"}
+                                zIndex={5000}
+
+
+                            />
+                            </View>
+                            <View style={{ marginVertical:15,marginHorizontal:10, height:45, alignContent:"center"}}>
+                                <Text style={{marginLeft: 12, fontWeight:"bold", color:"gray", fontStyle:"italic", fontSize:12, marginBottom:3}}>DeadLine </Text>
+
+                                {Platform.OS !== 'ios' &&  <Pressable onPress={
+                                    showDatepicker
+                                }>
+                                    <Input
+                                        backgroundColor={"white"}
+                                        style={{
+                                            borderWidth: 0.5,
+                                            borderRadius: 10,
+                                            margin: 5,
+                                            borderColor: "gray",
+                                            padding: 10,
+                                            fontSize: 15,
+                                        }}
+                                        placeholder='DeadLine'
+                                        value={newTaskDeadLine.toString().slice(0, 16)}
+
+                                        editable={false}
+
+                                    />
+                                </Pressable>}
+                                {
+                                    show && (
+                                        <DateTimePicker
+                                            testID="dateTimePicker"
+                                            value={newTaskDeadLine}
+                                            mode={mode}
+                                            is24Hour={true}
+                                            display="default"
+                                            onChange={onChange}
+                                        />
+                                    )
+                                }
+
+
+
+                            </View>
+                            <View style={{ flexDirection:"row", alignContent:"center", marginTop:35}}>
+
+                            <View style={{flex:1, marginHorizontal:15,}}>
+                            <Button  onPress={()=>setNewTaskModalVisible(false)}
+                            disabled={!newTaskTitle || !newTaskResponsible || !newTaskDeadLine}
+                            >
+                                Create task
+                            </Button>
+
+                            </View>
+                            <View style={{flex:1, marginHorizontal:15}}>
+                                <Button
+                                    color="#ea8685"
+                                    onPress={()=>setNewTaskModalVisible(false)}>
+                                    Cancel
+                                </Button>
+
+                            </View>
+                            </View>
+
                         </View>
                     </View>
                 </Modal>
@@ -168,12 +320,11 @@ const styles = StyleSheet.create( {
 
     },
     modalContent: {
-        width: '80%',
-        height: '50%',
+        width: '95%',
+        height: '70%',
         backgroundColor: '#FFFFFF',
         borderRadius: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
+
     },
     modalText: {
         fontSize: 20,

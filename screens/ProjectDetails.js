@@ -142,7 +142,7 @@ const ProjectDetails = ({ route, navigation,currentProject  }) => {
         <Tab.Navigator>
             <Tab.Screen name="Project info" component={ProjectInfo}/>
             <Tab.Screen name="Project tasks">
-                {() => <ProjectTasks tasks={tasks}/>}
+                {() => <ProjectTasks tasks={tasks} members={members}/>}
             </Tab.Screen>
             <Tab.Screen name="Project members" >
                 {() => <ProjectMembers members={members} projectId={currentProject.id}/>}

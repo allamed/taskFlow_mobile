@@ -247,7 +247,7 @@ const CurrentTask = ({ route , currentTask}) => {
 
 
             <View style={styles.taskButtons}>
-                <Button style={{backgroundColor:"#ffda79", margin:5, width:"40%", height:20}}
+                <Button style={{backgroundColor:"#ffda79" ,margin:5}}
                         disabled={(taskStatus == 'Completed' || !progressUpdated) }
 
                                   onPress={()=>{
@@ -256,7 +256,9 @@ const CurrentTask = ({ route , currentTask}) => {
 
 
                                   } }>
-                    Update progress
+
+                        Update progress
+
                 </Button>
 
 
@@ -269,7 +271,7 @@ const CurrentTask = ({ route , currentTask}) => {
                 </TouchableOpacity>*/}
             </View>
 
-            <View style={{height:300}}>
+            <View style={{height:100}}>
 
             </View>
         </View>
