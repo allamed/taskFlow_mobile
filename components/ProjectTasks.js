@@ -10,7 +10,7 @@ import {
     Platform
 } from "react-native";
 import UserAvatar from "./ui/UserAvatar";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Avatar, Icon} from "@rneui/themed";
 import {stringToColor} from "../utils/utilsFunctions";
 import CurrentTask from "../screens/CurrentTask";
@@ -20,6 +20,11 @@ import {GlobalStyles} from "../utils/globalStyles";
 import DropDownPicker from "react-native-dropdown-picker";
 import DateTimePicker, {DateTimePickerAndroid} from "@react-native-community/datetimepicker";
 import {TouchableRipple} from "react-native-paper";
+import {createTask} from "../features/project/projectSlice";
+import {useDispatch} from "react-redux";
+import {urlBase} from "../utils/axios";
+import TaskDetails from "../screens/TaskDetails";
+
 const taskStatus=(status)=>{
     //En_ATTENTE, EN_COURS, ATTENTE_VALIDATION,VALIDEE
     switch (status) {
@@ -57,17 +62,38 @@ const taskStatus=(status)=>{
     }
 }
 
-const ProjectTasks = ({tasks, members}) => {
+const ProjectTasks = ({ members,  projectId}) => {
+    const [taskAdded, setTaskAdded] = useState(0);
+
+    useEffect(() => {
+
+        getTasksByProject(projectId);
+
+    }, [taskAdded]);
+    const [tasks, setTasks] = useState([]);
+
     const [currentTask, setCurrentTask] = useState('initial value');
     const Stack = createNativeStackNavigator();
     const [show, setShow] = useState(false);
+    const dispatch = useDispatch();
+    const getTasksByProject = async (projectId) =>
+        await fetch(`${urlBase}/projets/${projectId}/tasks`).then(
+            async (response) => {
+                if (response.ok) {
+                    const data = await response.json();
+                    setTasks(data.taches);
+                } else console.log(response);
+                return;
+            }
+        );
 
-    const AllProjectTasks = ({tasks}) => {
+
+    const AllProjectTasks = ({tasks, navigation}) => {
         const [open, setOpen] = useState(false);
-        const [newTaskResponsible, setNewTaskResponsible] = useState('');
+        const [newTaskResponsible, setNewTaskResponsible] = useState({});
         const [items, setItems] = useState(members.map((member)=>({
             label: member.nom,
-            value: member.nom,
+            value: member.id,
         })));
 
         const [newTaskModalVisible, setNewTaskModalVisible] = useState(false);
@@ -93,14 +119,38 @@ const ProjectTasks = ({tasks, members}) => {
         };
         let tempTaskTitle = "";
 
+        const createNewTask = () => {
+            console.log("creating new task");
+            console.log(newTaskResponsible);
+            let newTask = {
+                title: newTaskTitle,
+                deadline: newTaskDeadLine,
+                responsableId: newTaskResponsible,
+                projectId: projectId,
+            }
+            console.log(newTask);
+            dispatch(createTask(newTask));
+            setTaskAdded(taskAdded+1);
+            setNewTaskModalVisible(false);
+
+        }
+
         return(
             <ScrollView style={{marginVertical:5}}>
+                <View style={{marginHorizontal:35, marginTop:10}}>
+                    <Button title={"+ add new task"} onPress={()=>
+                        setNewTaskModalVisible(true)
+                    }/>
+
+                </View>
 
                 {tasks.map((task)=>(
-                    <Pressable style={{ borderBottomColor: "grey", borderBottomWidth:0.5, padding:5}} key={task.id}
+                    <TouchableRipple style={{ borderBottomColor: "grey", borderBottomWidth:0.5, padding:5}} key={task.id}
                                onPress={
                                    ()=>{
                                        console.log("task pressed");
+                                       setCurrentTask(task);
+                                       navigation.navigate('Task details');
                                    }
                                }
                     >
@@ -123,10 +173,10 @@ const ProjectTasks = ({tasks, members}) => {
 
                                 <View style={{marginRight:10}}>
                                     <Text style={{
-                                        color:taskStatus(task.status).color,
+                                        color:taskStatus(task.etat).color,
                                         fontSize:12,
                                     }}>
-                                        {taskStatus(task.status).state}
+                                        {taskStatus(task.etat).state}
                                     </Text>
                                 </View>
                             </View>
@@ -134,14 +184,9 @@ const ProjectTasks = ({tasks, members}) => {
 
                         </View>
 
-                    </Pressable>
+                    </TouchableRipple>
                 ))}
-                <View style={{margin:25}}>
-                    <Button title={"add new task"} onPress={()=>
-                    setNewTaskModalVisible(true)
-                    }/>
 
-                </View>
                 <Modal
                     style={styles.modalContainer}
                 visible={newTaskModalVisible}
@@ -248,7 +293,7 @@ const ProjectTasks = ({tasks, members}) => {
                             <View style={{ flexDirection:"row", alignContent:"center", marginTop:35}}>
 
                             <View style={{flex:1, marginHorizontal:15,}}>
-                            <Button  onPress={()=>setNewTaskModalVisible(false)}
+                            <Button  onPress={createNewTask}
                             disabled={!newTaskTitle || !newTaskResponsible || !newTaskDeadLine}
                             >
                                 Create task
@@ -277,9 +322,7 @@ const ProjectTasks = ({tasks, members}) => {
 
     const ProjectCurrentTask = ({currentTask}) => {
         return(
-            <View>
-                <Text > project task details </Text>
-            </View>
+           <TaskDetails currentTask={currentTask} />
         );
     }
 return(
@@ -291,7 +334,7 @@ return(
         >
             {props => <AllProjectTasks {...props} setCurrentTask={setCurrentTask}  tasks={tasks}/>}
         </Stack.Screen>
-        <Stack.Screen name="Project Task details"  headerShown={false}>
+        <Stack.Screen name="Task details"  headerShown={false}>
             {props => <ProjectCurrentTask {...props} currentTask={currentTask} />}
         </Stack.Screen>
     </Stack.Navigator>);

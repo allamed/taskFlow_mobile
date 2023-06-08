@@ -22,16 +22,14 @@ const distinct = (arr) => {
 
 
 const ProjectDetails = ({ route, navigation,currentProject  }) => {
-    useEffect(() => {
 
-        getTasksByProject(currentProject.id);
 
-    }, []);
     const Tab = createMaterialTopTabNavigator();
 
     const [date, setDate] = useState(new Date(1598051730000));
     const [projectName, setProjectName] = useState(currentProject.nom);
     const [projectNameEdit, setProjectNameEdit] = useState(false);
+
 
     const onChange = (event, selectedDate) => {
         const currentDate = selectedDate;
@@ -51,17 +49,8 @@ const ProjectDetails = ({ route, navigation,currentProject  }) => {
         showMode('date');
     };
 
-    const [tasks, setTasks] = useState([]);
-    const getTasksByProject = async (projectId) =>
-        await fetch(`${urlBase}/projets/${projectId}/tasks`).then(
-            async (response) => {
-                if (response.ok) {
-                    const data = await response.json();
-                    setTasks(data.taches);
-                } else console.log(response);
-                return;
-            }
-        );
+
+
     console.log(currentProject.membres);
     const members = currentProject.membres.filter(
         (item, index) => currentProject.membres.findIndex((i) => i.id === item.id) === index
@@ -137,12 +126,13 @@ const ProjectDetails = ({ route, navigation,currentProject  }) => {
         </View>);
     }
 
+
     return(
 
-        <Tab.Navigator>
+        <Tab.Navigator >
             <Tab.Screen name="Project info" component={ProjectInfo}/>
             <Tab.Screen name="Project tasks">
-                {() => <ProjectTasks tasks={tasks} members={members}/>}
+                {(props) => <ProjectTasks  members={members}   projectId={currentProject.id}/>}
             </Tab.Screen>
             <Tab.Screen name="Project members" >
                 {() => <ProjectMembers members={members} projectId={currentProject.id}/>}

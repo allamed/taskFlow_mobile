@@ -109,6 +109,28 @@ export const removeMemberFromProject = createAsyncThunk(
 
     }
 );
+export const createTask = createAsyncThunk(
+    "tasks/addNewTask",
+    async (task, thunkAPI) => {
+        const tache = {
+            titre: task.title,
+            deadLine: task.deadline.toISOString(),
+            responsableId: task.responsableId,
+            projetId: task.projectId,
+        };
+        //console.log('tacheEnv');
+        //console.log(tache.titre);
+        let url = `/taches/create`;
+
+        try {
+            const resp = await customFetch.post(url, tache);
+
+            return resp.data;
+        } catch (error) {
+            return ;
+        }
+    }
+);
 
 const allProjectsSlice = createSlice({
   name: "allProjects",
@@ -232,7 +254,26 @@ return project;
 state.isLoading = false;
 //toast.error(payload);
 
-    });
+    }).addCase(createTask.pending, (state) => {
+        state.isLoading = true;
+    })
+        .addCase(createTask.fulfilled, (state, { payload }) => {
+            state.isLoading = false;
+            const task = payload.tache;
+            const project=task.projet;
+            state.projects = state.projects.map((p) => {
+               //
+                return p;
+            }
+            );
+            console.log("tache crée" + task);
+
+
+        })
+        .addCase(createTask.rejected, (state, { payload }) => {
+            state.isLoading = false;
+
+        });
     /*.addCase(getTasksByProject.pending, (state) => {})
       .addCase(getTasksByProject.fulfilled, (state, { payload }) => {
         state.isLoading = false;
