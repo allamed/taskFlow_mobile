@@ -182,9 +182,9 @@ export const getUserImage = createAsyncThunk(
 
 export const getUserParticipationProjects = createAsyncThunk(
   "user/participationProjects",
-  async (_, thunkAPI) => {
+  async (userId, thunkAPI) => {
     //TO DO (get user id from local storage)
-    const userId = 1;
+
     try {
       const resp = await customFetch.get(`/utilisateurs/${userId}/projets`);
 

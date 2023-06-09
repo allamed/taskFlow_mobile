@@ -11,9 +11,10 @@ import {TouchableRipple} from "react-native-paper";
 import {GlobalStyles} from "../utils/globalStyles";
 import UserAvatar from "../components/ui/UserAvatar";
 import {updateTaskDesc} from "../features/currentProject/currentProjectSlice";
+import {getAllProjects} from "../features/project/projectSlice";
 
 
-const TaskDetails = ({currentTask}) => {
+const TaskDetails = ({currentTask,refreshCurrentTask}) => {
     // display the details of current task
     // const { currentTask } = route.params;
 
@@ -48,6 +49,7 @@ const TaskDetails = ({currentTask}) => {
             return 6;
         }
     }
+
     // convert from an integer between 0 and 6 to a percentage
     const integerToPercentage = (integer) => {
         if (integer === 0) {
@@ -118,7 +120,11 @@ const TaskDetails = ({currentTask}) => {
     };
     const updateDescription = () => {
         const data = { taskId: task.id, newDesc: taskDescription };
-        dispatch(updateTaskDesc(data))
+        dispatch(updateTaskDesc(data));
+        refreshCurrentTask(task.id);
+
+        setDescriptionModalVisible(false);
+
     }
 
     const updateProgress = () => {
@@ -237,7 +243,7 @@ const TaskDetails = ({currentTask}) => {
                                 return(
                                     <TouchableRipple style={{margin:4,flex:1,
                                         backgroundColor: (index+1) <= graphicProgress ? "#20bf6b" : "#d1d8e0",
-                                        height:15, borderRadius:3}}>
+                                        height:15, borderRadius:3}} key={index}>
                                         <View >
                                         </View>
                                     </TouchableRipple>
@@ -297,6 +303,8 @@ const TaskDetails = ({currentTask}) => {
 
                             <Input
                                 backgroundColor={"white"}
+                                textAlignVertical={"top"}
+                                multiline={true}
                                 style={{borderWidth:0.5, borderRadius:10, borderColor:"gray", padding:10, fontSize:15, marginVertical:3}}
                                 placeholder='enter task description'
                                 defaultValue={taskDescription}
@@ -320,7 +328,7 @@ const TaskDetails = ({currentTask}) => {
                                     updateDescription();
 
                                 }}
-                                         disabled={taskDescription===task.description}
+                                         disabled={taskDescription===task.description || taskDescription===""}
                                 >
                                     Save
                                 </Button>

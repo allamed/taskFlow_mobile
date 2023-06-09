@@ -1,45 +1,39 @@
 import React, {useState} from 'react';
-import {View, Button, Platform} from 'react-native';
+import {View, Button, Platform, Image, Dimensions} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import {task} from "../assets/tasks5.png"
 
-const  Home = () => {
-    const [date, setDate] = useState(new Date(1598051730000));
-    const [mode, setMode] = useState('date');
-    const [show, setShow] = useState(false);
+const  Home = ({navigation}) => {
 
-    const onChange = (event, selectedDate) => {
-        const currentDate = selectedDate || date;
-        setShow(Platform.OS === 'ios');
-        setDate(currentDate);
-    };
-
-    const showMode = (currentMode) => {
-        setShow(true);
-        setMode(currentMode);
-    };
-
-    const showDatepicker = () => {
-        showMode('date');
-    };
-
-
-
+const screenWidth = Dimensions.get("window").width;
+const screenHeight = Dimensions.get("window").height;
     return (
-        <View>
-            <View>
-                <Button onPress={showDatepicker} title="Show date picker!" />
+        <View style={{flex: 1, backgroundColor:"white", borderTopWidth:0.3, borderColor:"gray"}}>
+            <View style={{flex:1}}>
+                <View >
+                    <Image
+                        source={require("../assets/projects.png")}
+                        style={{ alignSelf:"center", width:screenWidth, height:screenHeight*0.4}}
+                    />
+                </View>
+                <Button  onPress={()=>{
+                    navigation.navigate("Projects")
+                }
+                } title="Manage my projects" />
+            </View>
+            <View style={{flex:1}}>
+                <View >
+                    <Image
+                        source={require("../assets/tasks5.png")}
+                        style={{ alignSelf:"center", width:screenWidth, height:screenHeight*0.4}}
+                    />
+                </View>
+                <Button onPress={()=>{
+                    navigation.navigate("Tasks")
+                }
+                } title="Manage recived tasks" />
             </View>
 
-            {show && (
-                <DateTimePicker
-                    testID="dateTimePicker"
-                    value={date}
-                    mode={mode}
-                    is24Hour={true}
-                    display="default"
-                    onChange={onChange}
-                />
-            )}
         </View>
     );
 };

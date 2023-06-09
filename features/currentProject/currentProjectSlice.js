@@ -314,10 +314,11 @@ const currentProjectSlice = createSlice({
           return task;
         });
 
-
+        console.log("desc edited");
       })
       .addCase(updateTaskDesc.rejected, (state, { payload }) => {
         state.isLoading = false;
+        console.log("desc not edited")
 
       })
       .addCase(updateTaskDeadLine.pending, (state) => {

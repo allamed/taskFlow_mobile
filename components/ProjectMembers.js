@@ -7,6 +7,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {addMemberToProject, getAllProjects, removeMemberFromProject} from "../features/project/projectSlice";
 import UserAvatar from "./ui/UserAvatar";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {TouchableRipple} from "react-native-paper";
 
 const ProjectMembers = ({ projectId, members}) => {
 
@@ -88,14 +89,20 @@ const ProjectMembers = ({ projectId, members}) => {
 
 
 
-        <ScrollView style={{margin:25}} contentContainerStyle={{alignContent:"center", flex:1}}
+        <ScrollView  contentContainerStyle={{alignContent:"center", marginVertical:10}}
 
         >
 
             {projectMembers.map((member)=>{
                 return (
-                    <Pressable style={{
+                    <TouchableRipple style={{
                         backgroundColor: taskPressed==member.id && "lightgrey",
+
+
+                        height:50,
+                        borderBottomWidth:0.5,
+                        borderColor:"grey",
+                        marginVertical:5,
                     }} key={member.id}
                                onLongPress={
                         ()=>{
@@ -111,7 +118,7 @@ const ProjectMembers = ({ projectId, members}) => {
                                }
                     }
                     >
-                        <View style={{flexDirection:"row", alignItems:"center", margin:5}}>
+                        <View style={{flexDirection:"row", alignItems:"center", marginHorizontal:25}}>
                             <View style={{flex:1}}>
                                 <UserAvatar id={member.id} nom={member.nom}/>
                             </View>
@@ -134,7 +141,7 @@ const ProjectMembers = ({ projectId, members}) => {
 
                         </View>
 
-                    </Pressable>
+                    </TouchableRipple>
 
     );
             }
@@ -215,6 +222,8 @@ const ProjectMembers = ({ projectId, members}) => {
 
                 </View>
             }
+        <View style={{minHeight:350}}>
+        </View>
 
 
 

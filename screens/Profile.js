@@ -5,19 +5,45 @@ import { Avatar, Title, Caption, Text, TouchableRipple } from 'react-native-pape
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {useDispatch, useSelector} from "react-redux";
-import {getUser} from "../features/user/userSlice";
+import {getUser, getUserParticipationProjects} from "../features/user/userSlice";
 import {urlBase} from "../utils/axios";
+import {getAllProjects} from "../features/project/projectSlice";
+import {getAllTasks} from "../features/tasks/allTasksSlice";
 
 export default function Profile() {
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(getUser());
+    } , []);
+    const {user}= useSelector((store) => store.user);
+    return (
+        <UserProfile user={user}/>
+    );
+}
+const UserProfile = ({user}) => {
 
     const [url, setUrl] = useState("");
     const dispatch = useDispatch();
     useEffect(() => {
-      dispatch(getUser());
+
+      dispatch(getAllTasks(user.email));
+      dispatch(getAllProjects(user.email));
+      dispatch(getUserParticipationProjects(user.id));
+        getUserImage(user.id);
     }
         , []);
 
-    const {user}= useSelector((store) => store.user);
+    //console.log("projects" + userParticipationProjects);
+
+
+    const { projects } = useSelector((store) => store.allProjects);
+    const { tasks } = useSelector((store) => store.allTasks);
+    const {userParticipationProjects } = useSelector(
+        (store) => store.user
+    );
+    const validatedTasks = tasks.filter((card) => card.etat == "VALIDEE");
+
+
     console.log("user", user);
 
 
@@ -58,7 +84,7 @@ export default function Profile() {
                     <View style={[styles.userInfoSection, {marginTop: '10%', marginLeft: '-10%'}]}>
                         <View style={styles.row}>
                             <Icon name="map-marker-radius" color="#777777" size={20} />
-                            <Text style={{color: '#777777', marginLeft: 20}}>Homagama, Sri Lanka</Text>
+                            <Text style={{color: '#777777', marginLeft: 20}}>User adress</Text>
                         </View>
                         <View style={styles.row}>
                             <Icon name="phone" color="#777777" size={20} />
@@ -72,49 +98,29 @@ export default function Profile() {
 
                     <View style={styles.infoBoxWrapper}>
                         <View style={[styles.infoBox, {borderRightColor: '#dddddd', borderRightWidth: 1,}]}>
-                            <Title>$140</Title>
-                            <Caption>Wallet</Caption>
+                            <Title>{projects.length}</Title>
+                            <Caption>created projects</Caption>
                         </View>
 
                         <View style={styles.infoBox}>
-                            <Title>12</Title>
-                            <Caption>Orders</Caption>
+                            <Title>{userParticipationProjects.length}</Title>
+                            <Caption>participations in other projects</Caption>
+                        </View>
+                    </View>
+                    <View style={styles.infoBoxWrapper}>
+                        <View style={[styles.infoBox, {borderRightColor: '#dddddd', borderRightWidth: 1,}]}>
+                            <Title>{tasks.length}</Title>
+                            <Caption>received tasks</Caption>
+                        </View>
+
+                        <View style={styles.infoBox}>
+                            <Title>{validatedTasks.length}</Title>
+                            <Caption>completed tasks</Caption>
                         </View>
                     </View>
                 </View>
 
-                <View style={styles.menuWrapper}>
-                    <TouchableRipple onPress={() => {}}>
-                        <View style={styles.menuItem}>
-                            <Icon name="heart-outline" color="#FF6347" size={25}/>
-                            <Text style={styles.menuItemText}>Your Favorities</Text>
-                        </View>
-                    </TouchableRipple>
-                    <TouchableRipple onPress={() => {}}>
-                        <View style={styles.menuItem}>
-                            <Icon name="credit-card" color="#FF6347" size={25}/>
-                            <Text style={styles.menuItemText}>Payment</Text>
-                        </View>
-                    </TouchableRipple>
-                    <TouchableRipple onPress={() => {}}>
-                        <View style={styles.menuItem}>
-                            <Icon name="share-outline" color="#FF6347" size={25}/>
-                            <Text style={styles.menuItemText}>Tell Your Friends</Text>
-                        </View>
-                    </TouchableRipple>
-                    <TouchableRipple onPress={() => {}}>
-                        <View style={styles.menuItem}>
-                            <Icon name="account-outline" color="#FF6347" size={25}/>
-                            <Text style={styles.menuItemText}>Support</Text>
-                        </View>
-                    </TouchableRipple>
-                    <TouchableRipple onPress={() => {}}>
-                        <View style={styles.menuItem}>
-                            <Icon name="settings-outline" color="#FF6347" size={25}/>
-                            <Text style={styles.menuItemText}>Settings</Text>
-                        </View>
-                    </TouchableRipple>
-                </View>
+
             </ScrollView>
         </SafeAreaView>
     );
@@ -151,6 +157,7 @@ const styles = StyleSheet.create({
         height: 100,
     },
     infoBox: {
+        flex:1,
         width: '50%',
         alignItems: 'center',
         justifyContent: 'center',

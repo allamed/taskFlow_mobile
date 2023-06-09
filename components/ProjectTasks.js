@@ -64,12 +64,13 @@ const taskStatus=(status)=>{
 
 const ProjectTasks = ({ members,  projectId}) => {
     const [taskAdded, setTaskAdded] = useState(0);
+    const [taskUpdated, setTaskUpdated] = useState(false);
 
     useEffect(() => {
 
         getTasksByProject(projectId);
 
-    }, [taskAdded]);
+    }, [taskAdded, taskUpdated]);
     const [tasks, setTasks] = useState([]);
 
     const [currentTask, setCurrentTask] = useState('initial value');
@@ -319,10 +320,14 @@ const ProjectTasks = ({ members,  projectId}) => {
 
         );
     }
-
+    const refreshCurrentTask = (taskId) => {
+        setTaskUpdated(!taskUpdated);
+        const task = tasks.find(task => task.id === taskId);
+        setCurrentTask(task);
+    }
     const ProjectCurrentTask = ({currentTask}) => {
         return(
-           <TaskDetails currentTask={currentTask} />
+           <TaskDetails currentTask={currentTask}  refreshCurrentTask={refreshCurrentTask} />
         );
     }
 return(
