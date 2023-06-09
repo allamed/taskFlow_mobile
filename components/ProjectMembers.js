@@ -175,9 +175,7 @@ const ProjectMembers = ({ projectId, members}) => {
                 <View>
                     <Button disabled={addMemberModalVisible}  title={"+ add member"} onPress={()=>setAddMemberModalVisible(true)}/>
                 </View>
-                <View style={{marginVertical:10}}>
-                    <Button  disabled={addMemberModalVisible}  title={"- remove member"} color="#eb4d4b" onPress={()=>setAddMemberModalVisible(true)}/>
-                </View>
+
             </View>
             {
                 addMemberModalVisible &&
